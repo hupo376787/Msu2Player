@@ -11,7 +11,7 @@ Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑
 ## 快速开始
 
 1. 将 MSU2 MINI 屏幕接入电脑，确认 Windows 能正常识别其串口。
-2. 启动 `src/Msu2Player.exe`。播放媒体时，请将 `ffmpeg.exe` 放在播放器旁边；程序也会在系统 PATH 中查找。
+2. 启动 `src/Msu2Player.exe`。首次使用媒体功能时，若找不到 FFmpeg，程序会提示下载并安装，完成后自动重试。也可将 `ffmpeg.exe` 放在播放器旁边，或配置到系统 PATH。
 3. 在右上角 **语言 / Language** 选择简体中文或 English。切换立即生效，语言偏好自动保存，下次启动继续使用。
 4. 选择功能状态，点击 **连接屏幕**，再点击 **开始显示**。图片、GIF 和视频模式需要先选择文件，也可以将文件拖入窗口。
 
@@ -61,6 +61,16 @@ Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑
 
 备份位于播放器旁的 `离线备份/时间戳-标识/` 目录中。可使用 **恢复备份…** 选择其中的 `原离线动画.bin`，恢复过程也会先备份当前内容。只能在备份阶段取消；写入和校验期间请保持 USB 连接与供电。若设备的离线布局不符合支持的标准，程序会停止操作。
 
+## FFmpeg 依赖与自动下载
+
+**图片、GIF 和视频的预览、实时播放，以及离线动画生成需要 FFmpeg。** 屏幕内置动画 / 照片、电脑状态、时钟、桌面投屏和网速不依赖 FFmpeg。
+
+程序依次查找播放器旁的 `ffmpeg.exe`、当前用户的 FFmpeg 安装目录、Chocolatey 安装位置和 PATH。缺失时显示中英文提示，点击 **下载并继续** 后自动下载、显示进度、校验 SHA256、解压并检查能否运行，成功后继续加载媒体。可取消下载，失败后可重试或通过窗口中的官网链接手动下载。
+
+[FFmpeg 官网](https://ffmpeg.org/download.html)只提供源码；自动下载使用其下载页列出的 [Gyan Windows 构建](https://www.gyan.dev/ffmpeg/builds/)（release essentials ZIP，64 位 Windows）。程序使用下载源提供的 SHA256 校验下载完整性，保留随包提供的许可证和说明文件。文件保存到 `%LOCALAPPDATA%\MSU2MiniPlayer\ffmpeg\`，无需管理员权限；取消或失败时清理临时文件，不会将未完成的下载当作已安装版本。自动下载仅支持 64 位 Windows，构建提供方要求 Windows 10 或更高版本；其他系统可手动提供兼容的 `ffmpeg.exe`。
+
+静默开机时缺少 FFmpeg 会显示托盘提示，打开主窗口后处理下载。取消下载仍可使用不依赖 FFmpeg 的显示模式；选择媒体或点击 **开始显示** 可再次尝试。
+
 ## 配置与构建
 
 播放器将语言、端口、媒体路径和显示选项保存到程序旁的 `settings.xml`，请将程序放在当前账户可写的目录。原有配置文件可继续使用；缺少语言设置时跟随 Windows 界面语言。
@@ -71,7 +81,9 @@ Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑
 powershell -NoProfile -ExecutionPolicy Bypass -File .\src\build.ps1
 ```
 
-构建脚本使用 Windows 自带的 .NET Framework 4.x C# 编译器与 WinForms，输出 `src/Msu2Player.exe`。图标资源在 `src/icons/`；媒体解码器需另行提供。语言切换回归测试在 `work/LanguageTests.cs`；测试运行方法见 `work/test-language.ps1`，不连接串口、不写入屏幕，也不修改开机启动设置。
+构建脚本使用 Windows 的 .NET Framework 4.x C# 编译器与 WinForms，运行需要 .NET Framework 4.5 或更高版本，输出 `src/Msu2Player.exe`。图标资源在 `src/icons/`；媒体解码器可在缺失时自动下载。语言切换回归测试在 `work/LanguageTests.cs`；测试运行方法见 `work/test-language.ps1`，不连接串口、不写入屏幕，也不修改开机启动设置。
+
+FFmpeg 查找、校验、解压与下载窗口测试：`powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\test-ffmpeg.ps1`。加上 `-Download` 可测试真实下载、取消清理、重试和图片解码，文件仅保存在 `tests/output/`，不安装到用户目录或连接屏幕。
 
 `work/README.md` 与 `协议分析.md` 是硬件和协议分析资料。部分开发用硬件测试入口仍使用 COM13；它们与正常界面的自动串口识别相互独立。
 
@@ -82,7 +94,7 @@ MSU2 Mini Player is a Windows player for **160 × 80 MSU2 MINI** screens. It sup
 ### Getting started
 
 1. Connect the screen and ensure Windows recognizes its serial port.
-2. Run `src/Msu2Player.exe`. For media playback, put `ffmpeg.exe` beside the player or make it available on PATH.
+2. Run `src/Msu2Player.exe`. If FFmpeg is missing when using media, click **Download** in the prompt. The player installs it and retries automatically. You can also place `ffmpeg.exe` beside the player or on PATH.
 3. Select **English** from **语言 / Language** at the top right. Changes apply immediately and persist across restarts. The first launch follows the Windows UI language: Chinese uses Simplified Chinese; other languages use English.
 4. Choose a display mode, click **Connect**, then **Start display**. For image / GIF / video mode, use **Open file...** or drop a media file into the window.
 
@@ -102,4 +114,6 @@ After completion, exit all screen players and reconnect the screen. It plays fro
 
 ### Settings and building
 
-Settings, including language, are stored in `settings.xml` beside the executable; use a writable folder. Existing settings remain compatible. Build from the project root with the PowerShell command above using the Windows .NET Framework 4.x compiler. Media decoding requires a separately supplied `ffmpeg.exe`. Run `work/test-language.ps1` for language regression checks; these do not open serial ports, write screen flash, or change startup registry settings.
+FFmpeg is required for image / GIF / video preview and playback, and offline animation generation. Other modes work without it. Missing dependencies trigger a bilingual download dialog with progress, cancellation and retry. Since the [FFmpeg website](https://ffmpeg.org/download.html) provides source code, the downloader uses the Windows 64-bit release essentials ZIP from [Gyan](https://www.gyan.dev/ffmpeg/builds/), a provider listed on that page. It verifies the provider's SHA256 checksum, extracts the executable with its license and README, checks that it runs, and stores it under `%LOCALAPPDATA%\MSU2MiniPlayer\ffmpeg\` without administrator access. Automatic download requires 64-bit Windows; the provider targets Windows 10 or later. You may supply a compatible build manually on other systems. Hidden login startup shows a tray notification and defers the dialog until the main window is opened.
+
+Settings, including language, are stored in `settings.xml` beside the executable; use a writable folder. Existing settings remain compatible. Build from the project root with the PowerShell command above using the Windows .NET Framework 4.x compiler; .NET Framework 4.5 or later is required to run. Run `work/test-language.ps1` for language regression checks. Run `tests/test-ffmpeg.ps1` for dependency tests, optionally with `-Download` for a real download and decode test in `tests/output/`. Tests do not open serial ports, write screen flash, or change startup registry settings.

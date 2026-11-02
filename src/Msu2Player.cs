@@ -6,6 +6,8 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.IO.Ports;
+using System.IO.Compression;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -23,6 +25,25 @@ internal static class L
     public static string DefaultLanguage { get { return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName=="zh" ? "zh-CN" : "en"; } }
     public static bool Supported(string value) { return value=="zh-CN" || value=="en"; }
     static readonly Dictionary<string,string> English = new Dictionary<string,string> {
+        { "需要 FFmpeg", "FFmpeg required" },
+        { "未找到 FFmpeg。图片、GIF、视频和离线动画生成需要它；其他显示模式可继续使用。", "FFmpeg was not found. Images, GIFs, videos and offline animation generation need it. Other display modes remain available." },
+        { "将从 FFmpeg 官网列出的 Gyan 下载 Windows 64 位版本，校验后安装到当前用户目录，无需管理员权限。", "Download the Windows 64-bit build from Gyan, listed on the FFmpeg website. It will be verified and installed for the current user without administrator access." },
+        { "下载并继续", "Download" },
+        { "取消", "Cancel" },
+        { "打开官网下载页", "Open FFmpeg downloads" },
+        { "正在获取下载信息…", "Getting download details..." },
+        { "正在下载 FFmpeg：", "Downloading FFmpeg: " },
+        { "正在校验并解压…", "Verifying and extracting..." },
+        { "正在检查 FFmpeg…", "Checking FFmpeg..." },
+        { "下载失败，可重试或打开官网下载页手动下载：", "Download failed. Retry or open the FFmpeg website to download manually: " },
+        { "下载已取消，可以重试。", "Download cancelled. You can retry." },
+        { "缺少 FFmpeg，请打开主窗口下载后继续。", "FFmpeg is missing. Open the main window to download it and continue." },
+        { "未安装 FFmpeg，选择媒体或点击开始显示可重试。", "FFmpeg was not installed. Choose media or click Start display to retry." },
+        { "自动下载需要 64 位 Windows。请从官网下载兼容版本并将 ffmpeg.exe 放在程序旁。", "Automatic download requires 64-bit Windows. Download a compatible build and place ffmpeg.exe beside the player." },
+        { "下载校验信息无效。", "Invalid download checksum." },
+        { "下载文件校验失败，请重试。", "Download checksum mismatch. Please retry." },
+        { "下载包中没有唯一的 ffmpeg.exe。", "The download must contain exactly one ffmpeg.exe." },
+        { "下载的 FFmpeg 无法运行。请从官网下载兼容版本。", "The downloaded FFmpeg could not run. Download a compatible build from the FFmpeg website." },
         { "屏幕回复异常，请重新连接。", "Unexpected screen reply. Please reconnect." },
         { "屏幕型号确认失败。", "Could not verify the screen model." },
         { "请选择已识别的 MSU2 屏幕端口。", "Select a detected MSU2 screen port." },
@@ -387,6 +408,142 @@ internal sealed class ScreenPort : IDisposable
     public void Dispose() { if (port != null) { port.Dispose(); port = null; } }
 }
 
+internal sealed class FfmpegMissingException : FileNotFoundException
+{
+    public FfmpegMissingException() : base(L.T("缺少 FFmpeg，请打开主窗口下载后继续。")) { }
+}
+
+internal static class FfmpegSetup
+{
+    public const string Website="https://ffmpeg.org/download.html";
+    const string ChecksumUrl="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip.sha256";
+    public static string InstalledPath { get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"MSU2MiniPlayer","ffmpeg","ffmpeg.exe"); } }
+    static HttpWebRequest Request(string url) {
+        HttpWebRequest request=(HttpWebRequest)WebRequest.Create(url);
+        request.UserAgent="MSU2MiniPlayer";request.Timeout=20000;request.ReadWriteTimeout=30000;
+        return request;
+    }
+    public static void VerifyHash(string archive,string expected,CancellationToken token) {
+        if(expected==null || expected.Length!=64 || !System.Text.RegularExpressions.Regex.IsMatch(expected,"\\A[0-9a-fA-F]{64}\\z"))throw new IOException(L.T("下载校验信息无效。"));
+        using(SHA256 hash=SHA256.Create())using(Stream input=File.OpenRead(archive)) {
+            byte[] buffer=new byte[65536];int count;
+            while((count=input.Read(buffer,0,buffer.Length))>0) {token.ThrowIfCancellationRequested();hash.TransformBlock(buffer,0,count,buffer,0);}
+            hash.TransformFinalBlock(new byte[0],0,0);
+            if(!String.Equals(BitConverter.ToString(hash.Hash).Replace("-",""),expected,StringComparison.OrdinalIgnoreCase))throw new IOException(L.T("下载文件校验失败，请重试。"));
+        }
+    }
+    // Extract only explicitly selected files, never paths supplied by the archive.
+    public static void Extract(string archive,string folder,CancellationToken token) {
+        using(ZipArchive zip=ZipFile.OpenRead(archive)) {
+            ZipArchiveEntry executable=null;
+            foreach(ZipArchiveEntry entry in zip.Entries)if(entry.FullName.EndsWith("/bin/ffmpeg.exe",StringComparison.OrdinalIgnoreCase)) {
+                if(executable!=null)throw new IOException(L.T("下载包中没有唯一的 ffmpeg.exe。"));executable=entry;
+            }
+            if(executable==null)throw new IOException(L.T("下载包中没有唯一的 ffmpeg.exe。"));
+            Directory.CreateDirectory(folder);
+            using(Stream input=executable.Open())using(Stream output=File.Create(Path.Combine(folder,"ffmpeg.exe"))) {
+                byte[] buffer=new byte[65536];int count;
+                while((count=input.Read(buffer,0,buffer.Length))>0) {token.ThrowIfCancellationRequested();output.Write(buffer,0,count);}
+            }
+            foreach(ZipArchiveEntry entry in zip.Entries) {
+                string name=entry.Name;
+                if(name.Equals("LICENSE",StringComparison.OrdinalIgnoreCase) || name.Equals("LICENSE.txt",StringComparison.OrdinalIgnoreCase) || name.Equals("README.txt",StringComparison.OrdinalIgnoreCase)) {
+                    token.ThrowIfCancellationRequested();entry.ExtractToFile(Path.Combine(folder,name),true);
+                }
+            }
+        }
+    }
+    static void CheckExecutable(string path) {
+        ProcessStartInfo info=new ProcessStartInfo(path,"-version");info.UseShellExecute=false;info.CreateNoWindow=true;info.RedirectStandardOutput=true;info.RedirectStandardError=true;
+        bool recognized=false;
+        using(Process process=new Process()) {
+            process.StartInfo=info;
+            process.OutputDataReceived+=delegate(object sender,DataReceivedEventArgs e){if(e.Data!=null && e.Data.StartsWith("ffmpeg version ",StringComparison.OrdinalIgnoreCase))recognized=true;};
+            process.ErrorDataReceived+=delegate { };
+            process.Start();process.BeginOutputReadLine();process.BeginErrorReadLine();
+            if(!process.WaitForExit(10000)) {try{process.Kill();}catch{}throw new IOException(L.T("下载的 FFmpeg 无法运行。请从官网下载兼容版本。"));}
+            process.WaitForExit();
+            if(process.ExitCode!=0 || !recognized)throw new IOException(L.T("下载的 FFmpeg 无法运行。请从官网下载兼容版本。"));
+        }
+    }
+    public static string Install(Action<int,string> progress,CancellationToken token) {
+        return Install(progress,token,InstalledPath);
+    }
+    public static string Install(Action<int,string> progress,CancellationToken token,string installedPath) {
+        if(!Environment.Is64BitOperatingSystem)throw new PlatformNotSupportedException(L.T("自动下载需要 64 位 Windows。请从官网下载兼容版本并将 ffmpeg.exe 放在程序旁。"));
+        ServicePointManager.SecurityProtocol|=SecurityProtocolType.Tls12;
+        string root=Path.GetDirectoryName(installedPath);Directory.CreateDirectory(root);
+        string work=Path.Combine(root,"download-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(work);
+        try {
+            string checksum,downloadUrl;
+            progress(-1,L.T("正在获取下载信息…"));
+            HttpWebRequest request=Request(ChecksumUrl);
+            using(token.Register(request.Abort))using(WebResponse response=request.GetResponse())using(StreamReader reader=new StreamReader(response.GetResponseStream())) {
+                string[] fields=reader.ReadToEnd().Trim().Split(new char[]{' ','\t','\r','\n'},StringSplitOptions.RemoveEmptyEntries);
+                if(fields.Length==0)throw new IOException(L.T("下载校验信息无效。"));checksum=fields[0];
+                // Pin the ZIP to the version of the checksum, rather than a moving release alias.
+                Uri uri=response.ResponseUri;
+                if(uri.Scheme!="https" || uri.Host!="www.gyan.dev" || !uri.AbsolutePath.EndsWith(".zip.sha256",StringComparison.OrdinalIgnoreCase))throw new IOException(L.T("下载校验信息无效。"));
+                downloadUrl=uri.AbsoluteUri.Substring(0,uri.AbsoluteUri.Length-7);
+            }
+            string archive=Path.Combine(work,"ffmpeg.zip");request=Request(downloadUrl);
+            using(token.Register(request.Abort))using(WebResponse response=request.GetResponse())using(Stream input=response.GetResponseStream())using(Stream output=File.Create(archive)) {
+                byte[] buffer=new byte[65536];int count;long received=0,total=response.ContentLength;Stopwatch clock=Stopwatch.StartNew();
+                while((count=input.Read(buffer,0,buffer.Length))>0) {
+                    token.ThrowIfCancellationRequested();output.Write(buffer,0,count);received+=count;
+                    if(clock.ElapsedMilliseconds>200) {progress(total>0?(int)Math.Min(90,received*90/total):-1,L.T("正在下载 FFmpeg：")+(received/1048576.0).ToString("0.0")+" MB"+(total>0?" / "+(total/1048576.0).ToString("0.0")+" MB":""));clock.Restart();}
+                }
+            }
+            token.ThrowIfCancellationRequested();progress(92,L.T("正在校验并解压…"));VerifyHash(archive,checksum,token);
+            string extracted=Path.Combine(work,"extracted");Extract(archive,extracted,token);
+            progress(98,L.T("正在检查 FFmpeg…"));CheckExecutable(Path.Combine(extracted,"ffmpeg.exe"));token.ThrowIfCancellationRequested();
+            foreach(string file in Directory.GetFiles(extracted))if(Path.GetFileName(file)!="ffmpeg.exe")File.Copy(file,Path.Combine(root,Path.GetFileName(file)),true);
+            // A partial download is never visible to Locate(). Preserve a concurrent completed install.
+            if(!File.Exists(installedPath))File.Move(Path.Combine(extracted,"ffmpeg.exe"),installedPath);
+            return installedPath;
+        } catch {token.ThrowIfCancellationRequested();throw;}
+        finally {try{Directory.Delete(work,true);}catch{} }
+    }
+}
+
+internal sealed class FfmpegDownloadDialog : Form
+{
+    public static bool Ensure(IWin32Window owner) {
+        try {Decoder.Locate();return true;}catch(FfmpegMissingException) {
+            using(FfmpegDownloadDialog dialog=new FfmpegDownloadDialog())return dialog.ShowDialog(owner)==DialogResult.OK;
+        }
+    }
+    readonly Button download=new Button(),cancelButton=new Button();
+    readonly Label message=new Label();readonly ProgressBar progress=new ProgressBar();
+    CancellationTokenSource cancellation;bool busy,closeWhenCancelled;
+    public FfmpegDownloadDialog() {
+        Text=L.T("需要 FFmpeg");ClientSize=new Size(640,360);MinimumSize=new Size(656,399);StartPosition=FormStartPosition.CenterParent;
+        Font=new Font("Microsoft YaHei UI",10);BackColor=PlayerTheme.Canvas;ForeColor=PlayerTheme.Text;MaximizeBox=false;MinimizeBox=false;
+        TableLayoutPanel layout=new TableLayoutPanel();layout.Dock=DockStyle.Fill;layout.Padding=new Padding(24);layout.RowCount=6;layout.ColumnCount=1;
+        foreach(int height in new int[]{66,78,32,36,52,48})layout.RowStyles.Add(new RowStyle(SizeType.Absolute,height));
+        Label explanation=new Label();explanation.Text=L.T("未找到 FFmpeg。图片、GIF、视频和离线动画生成需要它；其他显示模式可继续使用。");explanation.Dock=DockStyle.Fill;layout.Controls.Add(explanation);
+        Label source=new Label();source.Text=L.T("将从 FFmpeg 官网列出的 Gyan 下载 Windows 64 位版本，校验后安装到当前用户目录，无需管理员权限。");source.Dock=DockStyle.Fill;layout.Controls.Add(source);
+        LinkLabel website=new LinkLabel();website.Text=L.T("打开官网下载页");website.AutoSize=true;website.LinkClicked+=delegate {try{Process.Start(new ProcessStartInfo(FfmpegSetup.Website){UseShellExecute=true});}catch(Exception e){message.Text=e.Message;}};layout.Controls.Add(website);
+        progress.Dock=DockStyle.Fill;layout.Controls.Add(progress);message.Dock=DockStyle.Fill;message.AutoEllipsis=true;layout.Controls.Add(message);
+        FlowLayoutPanel buttons=new FlowLayoutPanel();buttons.Dock=DockStyle.Fill;
+        download.Text=L.T("下载并继续");cancelButton.Text=L.T("取消");
+        foreach(Button button in new Button[]{download,cancelButton}) {button.Size=new Size(160,36);PlayerTheme.StyleButton(button,button==download);buttons.Controls.Add(button);}
+        layout.Controls.Add(buttons);Controls.Add(layout);AcceptButton=download;CancelButton=cancelButton;
+        download.Click+=async delegate {
+            if(busy)return;busy=true;download.Enabled=false;closeWhenCancelled=false;cancellation=new CancellationTokenSource();
+            Progress<Tuple<int,string>> updates=new Progress<Tuple<int,string>>(delegate(Tuple<int,string> update){if(IsDisposed || !busy)return;progress.Style=update.Item1<0?ProgressBarStyle.Marquee:ProgressBarStyle.Continuous;if(update.Item1>=0)progress.Value=update.Item1;message.Text=update.Item2;});
+            bool completed=false;
+            try {await Task.Run(delegate {FfmpegSetup.Install(delegate(int value,string text){((IProgress<Tuple<int,string>>)updates).Report(Tuple.Create(value,text));},cancellation.Token);});completed=true;}
+            catch(OperationCanceledException){message.Text=L.T("下载已取消，可以重试。");}
+            catch(Exception e){message.Text=L.T("下载失败，可重试或打开官网下载页手动下载：")+e.Message;}
+            finally {busy=false;cancellation.Dispose();cancellation=null;download.Enabled=true;progress.Style=ProgressBarStyle.Continuous;}
+            if(completed){DialogResult=DialogResult.OK;Close();}else if(closeWhenCancelled)Close();
+        };
+        cancelButton.Click+=delegate {if(busy){closeWhenCancelled=true;cancellation.Cancel();}else Close();};
+        FormClosing+=delegate(object sender,FormClosingEventArgs e){if(busy){e.Cancel=true;closeWhenCancelled=true;cancellation.Cancel();}};
+    }
+}
+
 internal sealed class Decoder : IDisposable
 {
     Process process;
@@ -394,13 +551,17 @@ internal sealed class Decoder : IDisposable
     public static string Locate()
     {
         string[] known = { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe"),
-            @"C:\ProgramData\chocolatey\bin\ffmpeg.exe",
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), @"Downloads\ffmpeg-8.1.2-full_build\bin\ffmpeg.exe") };
+            FfmpegSetup.InstalledPath, @"C:\ProgramData\chocolatey\bin\ffmpeg.exe" };
+        return Locate(known,Environment.GetEnvironmentVariable("PATH") ?? "");
+    }
+    internal static string Locate(string[] known,string searchPath)
+    {
         foreach (string f in known) if (File.Exists(f)) return f;
-        foreach (string dir in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(';')) {
+        foreach (string dir in searchPath.Split(';')) {
+            if(String.IsNullOrWhiteSpace(dir))continue;
             try { string f = Path.Combine(dir.Trim('"'), "ffmpeg.exe"); if (File.Exists(f)) return f; } catch { }
         }
-        throw new FileNotFoundException(L.T("找不到视频解码器。请将 ffmpeg.exe 放到程序旁边后重试。"));
+        throw new FfmpegMissingException();
     }
     public static bool IsStill(string file)
     {
@@ -663,7 +824,7 @@ internal static class WindowSignal
 internal sealed class PlayerForm : Form
 {
     ComboBox language = new ComboBox();
-    bool changingLanguage;
+    bool changingLanguage,decoderMissing,ffmpegPromptActive;
     ComboBox ports = new ComboBox(), fit = new ComboBox(), fps = new ComboBox();
     Button connect, choose, play, stop, refresh, offline, prev, next;
     Label filename, status, info;
@@ -751,7 +912,10 @@ internal sealed class PlayerForm : Form
         initialize=delegate {
             string path=!String.IsNullOrEmpty(initial) ? initial : settings.Media;
             if(!String.IsNullOrEmpty(path)) {
-                if(File.Exists(path)) { int restore=currentMode;LoadFile(path);if(String.IsNullOrEmpty(initial))states.SelectedIndex=restore; }
+                if(File.Exists(path)) {
+                    if(String.IsNullOrEmpty(initial) && currentMode!=7) {media=Path.GetFullPath(path);filename.Text=Path.GetFileName(media);UpdateButtons();}
+                    else LoadFile(path);
+                }
                 else status.Text=L.T("上次的媒体文件找不到，请重新选择。");
             }
             if(startedAtLogin) {
@@ -825,6 +989,7 @@ internal sealed class PlayerForm : Form
     }
     void ShowMainWindow() {
         if(closing)return;suppressStartupShow=false;ShowInTaskbar=true;Show();WindowState=FormWindowState.Normal;Activate();
+        if(decoderMissing && !ffmpegPromptActive)RestartPreview();
     }
     void HideToTray() {
         if(closing)return;
@@ -949,6 +1114,7 @@ internal sealed class PlayerForm : Form
         if (media == null || closing) return;
         int id = Interlocked.Increment(ref generation); Decoder old = decoder; decoder = null; if (old != null) old.Dispose();
         lock (gate) { latest = null; ended = false; sequence++; }
+        if(!EnsureDecoder())return;
         int targetFps = Int32.Parse(fps.Text); int mode = fit.SelectedIndex; bool turn = rotate.Checked, repeat = loop.Checked; string path = media;
         status.Text = L.T("正在载入媒体…");
         Task.Run(delegate {
@@ -961,9 +1127,25 @@ internal sealed class PlayerForm : Form
                     lock (gate) { if (id != generation) break; latest = frame; sequence++; }
                 }
                 if (id == generation) { lock (gate) { ended = true; } Message(L.T("媒体已就绪")); }
-            } catch (Exception e) { if (id == generation && !closing) { lock (gate) { ended = true; } Message(L.T("载入失败：") + e.Message.Split('\n')[0]); Log(e.ToString()); } }
+            } catch (FfmpegMissingException) {UI(delegate {if(id==generation && !closing)RestartPreview();});}
+            catch (Exception e) { if (id == generation && !closing) { lock (gate) { ended = true; } Message(L.T("载入失败：") + e.Message.Split('\n')[0]); Log(e.ToString()); } }
             finally { if (active != null) active.Dispose(); lock (gate) { if (decoder == active) decoder = null; } }
         });
+    }
+    bool EnsureDecoder()
+    {
+        try {Decoder.Locate();decoderMissing=false;return true;}catch(FfmpegMissingException) {decoderMissing=true;}
+        if(ffmpegPromptActive)return false;
+        if(suppressStartupShow || !Visible) {
+            status.Text=L.T("缺少 FFmpeg，请打开主窗口下载后继续。");
+            if(tray!=null)tray.ShowBalloonTip(6000,L.T("需要 FFmpeg"),status.Text,ToolTipIcon.Info);
+            return false;
+        }
+        ffmpegPromptActive=true;
+        try {
+            if(FfmpegDownloadDialog.Ensure(this)){decoderMissing=false;return true;}
+            status.Text=L.T("未安装 FFmpeg，选择媒体或点击开始显示可重试。");preview.Hint(status.Text);return false;
+        } finally {ffmpegPromptActive=false;}
     }
     void Connect()
     {
@@ -1010,6 +1192,7 @@ internal sealed class PlayerForm : Form
     }
     void Play()
     {
+        if(currentMode==7 && decoderMissing){RestartPreview();return;}
         if (!connected && ports.SelectedItem == null) { status.Text = L.T("请插入屏幕后刷新并选择端口。"); return; }
         lock (gate) { if (latest == null && currentMode!=0 && currentMode!=3) { status.Text = L.T("请等待内容载入完成。"); return; } }
         if (currentMode==7 && ended && !Decoder.IsStill(media)) RestartPreview();
@@ -1114,7 +1297,7 @@ internal sealed class OfflineDialog : Form
         save.Enabled = false; cancelButton.Enabled = false; root.Controls.Add(buttons,0,5);
         message.Text = Path.GetFileName(media); message.AutoEllipsis = true; message.Dock = DockStyle.Fill; root.Controls.Add(message,0,6); Controls.Add(root);
         prepare.Click += async delegate {
-            if(busy) return; SetBusy(true); message.Text = L.T("正在生成离线动画…"); double offset = (double)start.Value;
+            if(busy || !FfmpegDownloadDialog.Ensure(this)) return; SetBusy(true); message.Text = L.T("正在生成离线动画…"); double offset = (double)start.Value;
             try { prepared = await Task.Run(delegate { return OfflineClip.Create(media,fit,rotate,offset); }); frameIndex=0; message.Text = L.T("预览已生成：160 × 80 · 36 帧 · 3.6 秒"); }
             catch(Exception e) { prepared = null; message.Text = L.T("生成失败：")+e.Message; }
             finally { SetBusy(false); }
