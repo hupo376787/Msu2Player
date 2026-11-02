@@ -2,6 +2,12 @@
 
 Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑状态监测和离线动画。界面支持简体中文与 English。
 
+## 运行截图 / Screenshot
+
+播放器连接 MSU2 屏幕并实时播放视频的界面。
+
+![MSU2 Mini Player 运行截图：连接屏幕并播放视频](docs/screenshots/msu2-player-running.png)
+
 ## 快速开始
 
 1. 将 MSU2 MINI 屏幕接入电脑，确认 Windows 能正常识别其串口。
