@@ -4,7 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 work/
-tests/output/
+tests/
+src/离线备份
 
 # User-specific files
 *.rsuser

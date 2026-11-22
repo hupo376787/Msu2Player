@@ -25,6 +25,41 @@ internal static class L
     public static string DefaultLanguage { get { return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName=="zh" ? "zh-CN" : "en"; } }
     public static bool Supported(string value) { return value=="zh-CN" || value=="en"; }
     static readonly Dictionary<string,string> English = new Dictionary<string,string> {
+        { "写入完成，未执行完整校验。", "Write complete. Full verification was skipped." },
+        { "照片已写入，未执行完整校验，请选择状态 3 显示。", "Photo written. Full verification was skipped. Select mode 3 to display it." },
+        { "写入完成，未执行完整校验。退出所有播放器后重新上电；若显示其他页面，可轻触屏幕切回动画。", "Write complete. Full verification was skipped. Exit all players and reconnect power. Tap the screen to return to animation if needed." },
+        { "将替换原内容，先备份再写入。备份阶段可取消。", "The original content will be backed up before replacement. Backup can be cancelled." },
+        { "将直接替换原内容，跳过备份。", "The original content will be replaced without backup." },
+        { "写入后将完整校验。", "Full verification will follow writing." },
+        { "将跳过写后校验。", "Verification after writing will be skipped." },
+        { "\r\n\r\n写入期间请保持 USB 供电。现在开始？", "\r\n\r\nKeep USB power connected while writing. Start now?" },
+        { "写入前备份原内容（较慢）", "Back up original content (slower)" },
+        { "写入后完整校验", "Full verification after writing" },
+        { "正在读取需要保留的相邻资源…", "Reading adjacent resources to preserve..." },
+        { "正在写入数据，请保持供电", "Writing data. Keep USB power connected." },
+        { "将替换原内容，先备份再写入，最后完整校验。备份阶段可取消。写入期间请保持 USB 供电。现在开始？", "Replace the content after backing it up, then fully verify. Backup can be cancelled. Keep USB power connected while writing. Start now?" },
+        { "将直接替换原内容并完整校验。原内容不会备份，写入和校验期间请保持 USB 供电。现在开始？", "Replace the content directly and fully verify it. The original will not be backed up. Keep USB power connected during writing and verification. Start now?" },
+        { "\r\n\r\n写入记录：\r\n", "\r\n\r\nWrite records:\r\n" },
+
+        { "等待屏幕重连，将恢复之前的状态…", "Waiting for the screen to reconnect and restore its previous state..." },
+        { "取消连接", "Cancel connection" },
+        { "全屏", "Fullscreen" },
+        { "退出全屏", "Exit fullscreen" },
+        { "写入及完整校验完成。", "Write and full verification complete." },
+        { "照片数据或备份大小不正确。", "Invalid photo or backup size." },
+        { "正在备份照片及相邻资源…", "Backing up photo and adjacent resources..." },
+        { "备份已保存，开始写入照片，请保持供电", "Backup saved. Writing photo. Keep USB power connected." },
+        { "保存到屏幕 · 照片", "Save to screen \u00b7 Photo" },
+        { "将选取一帧保存到状态 3 的照片槽位。保存后选择状态 3 并点击开始显示。", "Save one frame to the photo slot for mode 3. After saving, select mode 3 and click Start display." },
+        { "将替换屏幕照片，自动备份并校验照片及相邻资源。", "Replaces the photo. Backs up and verifies the photo and adjacent resources." },
+        { "正在生成照片…", "Preparing photo..." },
+        { "照片预览已生成：160 × 80", "Photo preview ready: 160 x 80" },
+        { "选择照片或照片扇区备份", "Select a photo or photo sector backup" },
+        { "照片备份", "Photo backup" },
+        { "将替换状态 3 的屏幕照片。先备份照片及相邻资源，写入后完整校验。写入期间请保持 USB 供电。现在开始？", "Replace the mode 3 photo after backing up the photo and adjacent resources, then fully verify. Keep USB power connected while writing. Start now?" },
+        { "写入屏幕照片", "Write screen photo" },
+        { "照片已保存并校验，请选择状态 3 显示。", "Photo saved and verified. Select mode 3 to display it." },
+
         { "需要 FFmpeg", "FFmpeg required" },
         { "未找到 FFmpeg。图片、GIF、视频和离线动画生成需要它；其他显示模式可继续使用。", "FFmpeg was not found. Images, GIFs, videos and offline animation generation need it. Other display modes remain available." },
         { "将从 FFmpeg 官网列出的 Gyan 下载 Windows 64 位版本，校验后安装到当前用户目录，无需管理员权限。", "Download the Windows 64-bit build from Gyan, listed on the FFmpeg website. It will be verified and installed for the current user without administrator access." },
@@ -53,17 +88,17 @@ internal static class L
         { "屏幕连接中断，请重新连接。", "Connection lost. Please reconnect." },
         { "存储读取回复异常，已停止操作。", "Unexpected storage reply. Operation stopped." },
         { "屏幕离线布局与 36 帧 / 100ms 的标准配置不符，未执行擦除或写入。", "The offline layout is not the standard 36 frames / 100 ms. Nothing was erased or written." },
-        { "存储写入未确认。请保留备份，重新连接后恢复。", "Storage write was not confirmed. Keep the backup and restore it after reconnecting." },
+        { "存储写入未确认。请保留写入记录并重新连接。", "Storage write was not confirmed. Keep the write records and reconnect." },
         { "离线动画必须是 36 帧 160×80 RGB565。", "Offline animation must contain 36 frames of 160 x 80 RGB565." },
         { "备份原动画 ", "Backing up original animation " },
         { "%（备份和校验总计可能约 15 分钟）", "% (backup and verification may take about 15 minutes)" },
         { "备份已保存，开始写入离线动画；请保持供电", "Backup saved. Writing animation; keep USB power connected." },
         { "写入第 ", "Writing page " },
-        { " 页时回复异常。备份：", " failed: unexpected reply. Backup: " },
-        { "写入动画 ", "Writing animation " },
+        { " 页时回复异常。记录：", " failed: unexpected reply. Record: " },
+        { "写入数据 ", "Writing data " },
         { "写后校验失败，地址 ", "Verification failed at address " },
-        { "。备份：", ". Backup: " },
-        { "校验动画 ", "Verifying animation " },
+        { "。记录：", ". Record: " },
+        { "校验数据 ", "Verifying data " },
         { "写入及完整校验完成。关闭播放器并重新上电，即可离线播放。", "Write and full verification complete. Exit the player and reconnect power for offline playback." },
         { "图像数据大小不正确。", "Invalid image data size." },
         { "找不到视频解码器。请将 ffmpeg.exe 放到程序旁边后重试。", "Decoder not found. Place ffmpeg.exe beside the player and retry." },
@@ -216,7 +251,16 @@ internal static class L
     }
 }
 
-internal sealed class ScreenPort : IDisposable
+internal interface IScreenConnection : IDisposable
+{
+    event Action TouchReleased;
+    void Orientation(bool turn);
+    void ShowStoredPhoto(int page);
+    void SendFrame(byte[] pixels, CancellationToken cancel);
+    void KeepAlive();
+}
+
+internal sealed class ScreenPort : IScreenConnection
 {
     SerialPort port;
     public event Action TouchReleased;
@@ -336,52 +380,99 @@ internal sealed class ScreenPort : IDisposable
     void FlashAck(byte[] command)
     {
         Write(command); byte[] reply = Read(6);
-        if (reply[0] != command[0] || reply[1] != command[1]) throw new IOException(L.T("存储写入未确认。请保留备份，重新连接后恢复。"));
+        if (reply[0] != command[0] || reply[1] != command[1]) throw new IOException(L.T("存储写入未确认。请保留写入记录并重新连接。"));
     }
-    public void SaveOffline(byte[] animation, string folder, Action<int, string> progress, CancellationToken cancel)
+    public void SaveOffline(byte[] animation, string folder, Action<int, string> progress, CancellationToken cancel, bool backupOriginal = true, bool verifyAfterWrite = true)
     {
         const int size = 921600;
         if (animation == null || animation.Length != size) throw new ArgumentException(L.T("离线动画必须是 36 帧 160×80 RGB565。"));
         byte[] layout = OfflineLayout(); // Never infer or rewrite panel settings.
         Directory.CreateDirectory(folder); string backup = Path.Combine(folder, "原离线动画.bin");
         File.WriteAllBytes(Path.Combine(folder, "离线目录-只读.bin"), layout);
-        // Finish and close the backup before sending any erase command.
-        using (FileStream output = new FileStream(backup + ".partial", FileMode.CreateNew, FileAccess.Write)) {
-            byte[] chunk = new byte[1024];
-            for (int pos = 0; pos < size; pos += chunk.Length) {
-                cancel.ThrowIfCancellationRequested();
-                chunk = ReadRange(pos, chunk.Length);
-                output.Write(chunk, 0, chunk.Length);
-                progress(pos * 40 / size, L.T("备份原动画 ") + (pos * 100 / size) + L.T("%（备份和校验总计可能约 15 分钟）"));
+        if(backupOriginal) {
+            // Finish and close the backup before sending any erase command.
+            using (FileStream output = new FileStream(backup + ".partial", FileMode.CreateNew, FileAccess.Write)) {
+                byte[] chunk = new byte[1024];
+                for (int pos = 0; pos < size; pos += chunk.Length) {
+                    cancel.ThrowIfCancellationRequested();
+                    chunk = ReadRange(pos, chunk.Length);
+                    output.Write(chunk, 0, chunk.Length);
+                    progress(pos * 40 / size, L.T("备份原动画 ") + (pos * 100 / size) + L.T("%（备份和校验总计可能约 15 分钟）"));
+                }
+                output.Flush(true);
             }
-            output.Flush(true);
+            File.Move(backup + ".partial", backup);
+            using (SHA256 hash = SHA256.Create()) using (FileStream input = File.OpenRead(backup))
+                File.WriteAllText(Path.Combine(folder, "备份校验SHA256.txt"), BitConverter.ToString(hash.ComputeHash(input)).Replace("-", ""));
         }
-        File.Move(backup + ".partial", backup);
-        using (SHA256 hash = SHA256.Create()) using (FileStream input = File.OpenRead(backup))
-            File.WriteAllText(Path.Combine(folder, "备份校验SHA256.txt"), BitConverter.ToString(hash.ComputeHash(input)).Replace("-", ""));
         File.WriteAllBytes(Path.Combine(folder, "本次写入动画.bin"), animation);
         cancel.ThrowIfCancellationRequested();
-        progress(40, L.T("备份已保存，开始写入离线动画；请保持供电"));
+        progress(backupOriginal ? 40 : 0, L.T("正在写入数据，请保持供电"));
+        string record = backupOriginal ? backup : Path.Combine(folder,"本次写入动画.bin");
+        WriteFlashImage(0, animation, record, progress, backupOriginal ? 40 : 0, verifyAfterWrite);
+    }
+    public void SavePhoto(byte[] photo, string folder, Action<int,string> progress, CancellationToken cancel, bool backupOriginal = true, bool verifyAfterWrite = true)
+    {
+        if(photo == null || (photo.Length != StoredPhoto.FrameBytes && photo.Length != StoredPhoto.SectorBytes))
+            throw new ArgumentException(L.T("照片数据或备份大小不正确。"));
+        byte[] layout = OfflineLayout();
+        Directory.CreateDirectory(folder);
+        File.WriteAllBytes(Path.Combine(folder,"离线目录-只读.bin"),layout);
+        byte[] original = new byte[StoredPhoto.SectorBytes];
+        string backup = Path.Combine(folder,"照片扇区-3920-4031.bin");
+        if(backupOriginal) {
+            for(int pos = 0; pos < original.Length; pos += 1024) {
+                cancel.ThrowIfCancellationRequested();
+                byte[] chunk = ReadRange(StoredPhoto.FirstPage * 256 + pos,1024);
+                Buffer.BlockCopy(chunk,0,original,pos,chunk.Length);
+                progress(pos * 40 / original.Length,L.T("正在备份照片及相邻资源…"));
+            }
+            using(FileStream output = new FileStream(backup + ".partial",FileMode.CreateNew,FileAccess.Write)) {
+                output.Write(original,0,original.Length);output.Flush(true);
+            }
+            File.Move(backup + ".partial",backup);
+            File.WriteAllBytes(Path.Combine(folder,"原屏幕照片.bin"),StoredPhoto.Frame(original));
+            using(SHA256 hash = SHA256.Create())
+                File.WriteAllText(Path.Combine(folder,"备份校验SHA256.txt"),BitConverter.ToString(hash.ComputeHash(original)).Replace("-",""));
+        } else if(photo.Length == StoredPhoto.FrameBytes) {
+            cancel.ThrowIfCancellationRequested();
+            progress(0,L.T("正在读取需要保留的相邻资源…"));
+            original = StoredPhoto.ReadPreservedResources(ReadRange);
+        }
+        byte[] image = StoredPhoto.Merge(original,photo);
+        File.WriteAllBytes(Path.Combine(folder,"本次写入照片扇区.bin"),image);
+        cancel.ThrowIfCancellationRequested();
+        progress(backupOriginal ? 40 : 0,L.T("正在写入数据，请保持供电"));
+        string record = backupOriginal ? backup : Path.Combine(folder,"本次写入照片扇区.bin");
+        WriteFlashImage(StoredPhoto.FirstPage,image,record,progress,backupOriginal ? 40 : 0,verifyAfterWrite);
+        ShowStoredPhoto(StoredPhoto.Page);
+    }
+    void WriteFlashImage(int startPage, byte[] data, string backup, Action<int,string> progress, int progressStart = 40, bool verifyAfterWrite = true)
+    {
         int previousTimeout = port.ReadTimeout; port.ReadTimeout = 60000;
-        try { FlashAck(new byte[] { 3, 2, 0, 0, 0x0e, 0x10 }); } finally { port.ReadTimeout = previousTimeout; }
+        int pages = data.Length / 256;
+        try { FlashAck(new byte[] { 3, 2, (byte)(startPage >> 8), (byte)startPage, (byte)(pages >> 8), (byte)pages }); } finally { port.ReadTimeout = previousTimeout; }
+        int writeEnd = verifyAfterWrite ? (progressStart == 0 ? 40 : 75) : 100;
         byte[] packet = new byte[390];
-        for (int page = 0; page < 3600; page++) {
+        for (int page = 0; page < pages; page++) {
             for (int i = 0; i < 64; i++) {
                 packet[i * 6] = 4; packet[i * 6 + 1] = (byte)i;
-                Buffer.BlockCopy(animation, page * 256 + i * 4, packet, i * 6 + 2, 4);
+                Buffer.BlockCopy(data, page * 256 + i * 4, packet, i * 6 + 2, 4);
             }
-            packet[384] = 3; packet[385] = 3; packet[386] = 0; packet[387] = (byte)(page >> 8); packet[388] = (byte)page; packet[389] = 1;
+            packet[384] = 3; packet[385] = 3; packet[386] = 0; packet[387] = (byte)((startPage + page) >> 8); packet[388] = (byte)(startPage + page); packet[389] = 1;
             port.Write(packet, 0, packet.Length); byte[] reply = Read(6);
-            if (reply[0] != 3 || reply[1] != 3) throw new IOException(L.T("写入第 ") + page + L.T(" 页时回复异常。备份：") + backup);
-            if (page % 16 == 0) progress(40 + page * 35 / 3600, L.T("写入动画 ") + (page * 100 / 3600) + "%");
+            if (reply[0] != 3 || reply[1] != 3) throw new IOException(L.T("写入第 ") + (startPage + page) + L.T(" 页时回复异常。记录：") + backup);
+            if (page % 16 == 0) progress(progressStart + page * (writeEnd - progressStart) / pages, L.T("写入数据 ") + (page * 100 / pages) + "%");
         }
-        // Full readback, not a sampled check. Layout and other resources are outside the erased range.
-        for (int pos = 0; pos < size; pos+=1024) {
-            byte[] check=ReadRange(pos,1024);
-            for(int i=0;i<check.Length;i++) if(check[i]!=animation[pos+i]) throw new IOException(L.T("写后校验失败，地址 ") + (pos+i) + L.T("。备份：") + backup);
-            progress(75 + pos * 25 / size, L.T("校验动画 ") + (pos * 100 / size) + "%");
+        if(verifyAfterWrite) {
+            // Full readback when selected. Layout and other resources are outside the erased range.
+            for (int pos = 0; pos < data.Length; pos+=1024) {
+                byte[] check=ReadRange(startPage * 256 + pos,1024);
+                for(int i=0;i<check.Length;i++) if(check[i]!=data[pos+i]) throw new IOException(L.T("写后校验失败，地址 ") + (startPage * 256 + pos+i) + L.T("。记录：") + backup);
+                progress(writeEnd + pos * (100 - writeEnd) / data.Length, L.T("校验数据 ") + (pos * 100 / data.Length) + "%");
+            }
         }
-        progress(100, L.T("写入及完整校验完成。关闭播放器并重新上电，即可离线播放。"));
+        progress(100, L.T(verifyAfterWrite ? "写入及完整校验完成。" : "写入完成，未执行完整校验。"));
     }
     public void SendFrame(byte[] pixels, CancellationToken cancel)
     {
@@ -637,7 +728,12 @@ internal static class PlayerTheme
 internal sealed class Preview : Control
 {
     Bitmap frame;
-    public Preview() { DoubleBuffered = true; BackColor = PlayerTheme.Preview; Dock = DockStyle.Fill; }
+    public bool Fullscreen;
+    public Preview() {
+        DoubleBuffered = true; BackColor = PlayerTheme.Preview; Dock = DockStyle.Fill;
+        SetStyle(ControlStyles.StandardDoubleClick | ControlStyles.Selectable, true);
+        TabStop = true;
+    }
     public void SetFrame(byte[] bytes)
     {
         Bitmap next = new Bitmap(160, 80, PixelFormat.Format24bppRgb);
@@ -652,7 +748,8 @@ internal sealed class Preview : Control
     }
     protected override void OnPaint(PaintEventArgs e)
     {
-        base.OnPaint(e); int w = Math.Min(Width - 40, (Height - 40) * 2); w = Math.Max(w, 2);
+        base.OnPaint(e); int padding = Fullscreen ? 0 : 40;
+        int w = Math.Min(Width - padding, (Height - padding) * 2); w = Math.Max(w, 2);
         Rectangle rect = new Rectangle((Width - w) / 2, (Height - w / 2) / 2, w, w / 2);
         if (frame != null) { e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor; e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half; e.Graphics.DrawImage(frame, rect); }
         else TextRenderer.DrawText(e.Graphics, L.T(hint), Font, rect, Color.FromArgb(196,179,218), TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
@@ -660,6 +757,15 @@ internal sealed class Preview : Control
     protected override void Dispose(bool disposing) { if (disposing && frame != null) frame.Dispose(); base.Dispose(disposing); }
     string hint="选择媒体，开始预览";
     public void Hint(string text) { hint=L.Source(text); Bitmap old=frame;frame=null;if(old!=null)old.Dispose();Invalidate(); }
+}
+
+internal sealed class FullscreenPreviewForm : Form
+{
+    protected override bool ProcessCmdKey(ref System.Windows.Forms.Message message, Keys keyData)
+    {
+        if(keyData == Keys.Escape) { Close(); return true; }
+        return base.ProcessCmdKey(ref message, keyData);
+    }
 }
 
 internal sealed class PlayerSettings
@@ -838,15 +944,25 @@ internal sealed class PlayerForm : Form
     readonly Dashboard dashboard=new Dashboard();
     volatile int currentMode=7,modeEpoch;
     volatile bool outputRotate,touchEnabled=true;
-    bool changingMode;
+    bool changingMode, editingStoredMedia;
     DateTime nextPanel=DateTime.MinValue;
     static string[] StateNames { get { return new string[]{L.T("0 · 屏幕内动图"),L.T("1 · 电脑状态 · 蓝色"),L.T("2 · 电脑状态 · 红色"),L.T("3 · 屏幕内照片"),L.T("4 · 时钟"),L.T("5 · 桌面投屏"),L.T("6 · 网速"),L.T("7 · 图片 / GIF / 视频")}; } }
     PlayerSettings settings = PlayerSettings.Load(PlayerSettings.FilePath);
-    bool autoResume, settingStartup;
+    volatile bool autoResume;
+    bool settingStartup, reconnectWanted;
+    readonly Func<string,IScreenConnection> openScreen;
+    readonly Func<string[]> findScreenPorts;
     DateTime nextAutoAttempt=DateTime.MinValue;
     Preview preview = new Preview();
+    TableLayoutPanel previewHost;
+    FullscreenPreviewForm fullscreenPreview;
+    ContextMenuStrip previewMenu;
+    Button fullscreenButton;
     readonly object gate = new object();
     byte[] latest; long sequence, shown; bool ended;
+    byte[] displayedFrame;
+    int displayedPage = -1;
+    bool displayedRotation;
     volatile bool sending, connected, closing;
     CancellationTokenSource linkCancel;
     Task linkTask;
@@ -855,7 +971,11 @@ internal sealed class PlayerForm : Form
     long sentFrames, previousFrames; Stopwatch rate = Stopwatch.StartNew();
     System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
     public PlayerForm(string initial, bool startedAtLogin)
+        : this(initial, startedAtLogin, name => new ScreenPort(name), ScreenPort.FindPorts) { }
+    internal PlayerForm(string initial, bool startedAtLogin, Func<string,IScreenConnection> open, Func<string[]> findPorts)
     {
+        openScreen = open;
+        findScreenPorts = findPorts;
         L.Language=settings.Language;
         suppressStartupShow=startedAtLogin && settings.SilentStartup;
         ShowInTaskbar=!suppressStartupShow;
@@ -868,9 +988,10 @@ internal sealed class PlayerForm : Form
         Font = new Font("Microsoft YaHei UI", 10); AutoScaleMode = AutoScaleMode.Dpi;
         BackColor = PlayerTheme.Canvas; ForeColor = PlayerTheme.Text;
         BuildLayout();
+        SetupPreviewFullscreen();
         language.SelectedIndexChanged+=delegate { SwitchLanguage(); };
         PlayerTheme.StyleInputs(this);
-        refresh.Click += delegate { RefreshPorts(); }; connect.Click += async delegate { if (connected) await Disconnect(); else Connect(); };
+        refresh.Click += delegate { RefreshPorts(); }; connect.Click += async delegate { if (connected || reconnectWanted || linkTask != null) await Disconnect(); else Connect(); };
         choose.Click += delegate { Browse(); }; play.Click += delegate { Play(); }; stop.Click += delegate { Pause(); };
         prev.Click+=delegate { states.SelectedIndex=(states.SelectedIndex+7)%8; };next.Click+=delegate { states.SelectedIndex=(states.SelectedIndex+1)%8; };
         states.SelectedIndexChanged+=delegate { if(!changingLanguage) ChangeState(); };
@@ -890,24 +1011,24 @@ internal sealed class PlayerForm : Form
         silent.CheckedChanged+=delegate {SaveSettings();status.Text=silent.Checked?L.T("开机时隐藏窗口、在托盘运行并自动实时显示"):L.T("开机时最小化显示主窗口");};
         ports.SelectedIndexChanged += delegate { if(!changingLanguage && ports.SelectedItem!=null) SaveSettings(); };
         offline.Click += async delegate {
-            if(currentMode!=7)return;
+            if(!CanChooseMedia)return;
             if (media == null) { status.Text = L.T("请先选择图片、GIF 或视频。"); return; }
             if (ports.SelectedItem == null) { status.Text = L.T("请先选择屏幕端口。"); return; }
-            string target = ports.Text; Pause(); await Disconnect();
-            using (OfflineDialog d = new OfflineDialog(media, target, fit.SelectedIndex, rotate.Checked)) d.ShowDialog(this);
+            string target = ports.Text; bool photo = currentMode == 3; Pause(); await Disconnect();
+            using (OfflineDialog d = new OfflineDialog(media, target, fit.SelectedIndex, rotate.Checked, photo)) d.ShowDialog(this);
         };
         fit.SelectedIndexChanged += delegate { RestartPreview(); }; fps.SelectedIndexChanged += delegate { RestartPreview(); }; rotate.CheckedChanged += delegate { RestartPreview(); }; loop.CheckedChanged += delegate { RestartPreview(); };
-        AllowDrop = currentMode==7; DragEnter += delegate(object s, DragEventArgs e) { e.Effect=currentMode==7 && e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None; };
-        DragDrop += delegate(object s, DragEventArgs e) { if(currentMode!=7)return;string[] files = e.Data.GetData(DataFormats.FileDrop) as string[]; if (files != null && files.Length > 0) LoadFile(files[0]); };
+        AllowDrop = CanChooseMedia; DragEnter += delegate(object s, DragEventArgs e) { e.Effect=CanChooseMedia && e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None; };
+        DragDrop += delegate(object s, DragEventArgs e) { if(!CanChooseMedia)return;string[] files = e.Data.GetData(DataFormats.FileDrop) as string[]; if (files != null && files.Length > 0) LoadFile(files[0],true); };
         timer.Interval = 80; timer.Tick += delegate { TickPreview(); }; timer.Start();
         FormClosing += async delegate(object sender, FormClosingEventArgs e) {
             if(e.CloseReason==CloseReason.UserClosing && !exitRequested && !closing) {e.Cancel=true;HideToTray();return;}
-            if (closing) return; e.Cancel = true; closing = true; Enabled = false; timer.Stop();
+            if (closing) return; e.Cancel = true; ExitPreviewFullscreen(); closing = true; Enabled = false; timer.Stop();
             Interlocked.Increment(ref generation); Decoder old = decoder; decoder = null; if (old != null) old.Dispose();
             await Disconnect(); Close();
         };
         SetupTray();
-        FormClosed+=delegate {if(tray!=null){tray.Visible=false;if(tray.ContextMenuStrip!=null)tray.ContextMenuStrip.Dispose();tray.Dispose();}if(headerLogo!=null)headerLogo.Dispose();if(playerIcon!=null)playerIcon.Dispose();};
+        FormClosed+=delegate {if(previewMenu!=null)previewMenu.Dispose();if(tray!=null){tray.Visible=false;if(tray.ContextMenuStrip!=null)tray.ContextMenuStrip.Dispose();tray.Dispose();}if(headerLogo!=null)headerLogo.Dispose();if(playerIcon!=null)playerIcon.Dispose();};
         RefreshPorts(); ChangeState(); UpdateButtons();
         initialize=delegate {
             string path=!String.IsNullOrEmpty(initial) ? initial : settings.Media;
@@ -919,7 +1040,7 @@ internal sealed class PlayerForm : Form
                 else status.Text=L.T("上次的媒体文件找不到，请重新选择。");
             }
             if(startedAtLogin) {
-                autoResume=true; nextAutoAttempt=DateTime.MinValue;if(!suppressStartupShow)WindowState=FormWindowState.Minimized;
+                autoResume=true; reconnectWanted=true; nextAutoAttempt=DateTime.MinValue;if(!suppressStartupShow)WindowState=FormWindowState.Minimized;
                 if(media!=null || currentMode!=7) status.Text=L.T("开机实时显示：等待内容和屏幕就绪…");
                 else status.Text=L.T("开机实时播放未开始：请先选择媒体文件。");
             }
@@ -946,7 +1067,10 @@ internal sealed class PlayerForm : Form
         TableLayoutPanel left=new TableLayoutPanel();left.Dock=DockStyle.Fill;left.RowCount=2;left.RowStyles.Add(new RowStyle(SizeType.Percent,100));left.RowStyles.Add(new RowStyle(SizeType.Absolute,112));left.Margin=new Padding(0,0,18,0);body.Controls.Add(left,0,0);
         TableLayoutPanel previewCard=new TableLayoutPanel();previewCard.Dock=DockStyle.Fill;previewCard.BackColor=Color.White;previewCard.Padding=new Padding(14);previewCard.RowCount=2;previewCard.RowStyles.Add(new RowStyle(SizeType.Absolute,36));previewCard.RowStyles.Add(new RowStyle(SizeType.Percent,100));previewCard.Margin=new Padding(0,0,0,14);
         TableLayoutPanel previewTitle=new TableLayoutPanel();previewTitle.Dock=DockStyle.Fill;previewTitle.ColumnCount=2;previewTitle.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));previewTitle.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute,112));
-        Label live=Label(L.T("实时预览"),11,true);live.Margin=Padding.Empty;previewTitle.Controls.Add(live,0,0);Label resolution=Label("160 × 80",9,false);resolution.Dock=DockStyle.Fill;resolution.TextAlign=ContentAlignment.TopRight;resolution.Margin=Padding.Empty;resolution.ForeColor=PlayerTheme.Muted;previewTitle.Controls.Add(resolution,1,0);previewCard.Controls.Add(previewTitle,0,0);preview.Margin=Padding.Empty;previewCard.Controls.Add(preview,0,1);left.Controls.Add(previewCard,0,0);
+        FlowLayoutPanel previewActions=new FlowLayoutPanel();previewActions.Dock=DockStyle.Fill;previewActions.WrapContents=false;previewActions.Margin=Padding.Empty;
+        Label live=Label(L.T("实时预览"),11,true);live.Margin=new Padding(0,2,12,0);previewActions.Controls.Add(live);
+        fullscreenButton=Button(L.T("全屏"),100,false);fullscreenButton.Height=28;fullscreenButton.Margin=Padding.Empty;previewActions.Controls.Add(fullscreenButton);
+        previewTitle.Controls.Add(previewActions,0,0);Label resolution=Label("160 × 80",9,false);resolution.Dock=DockStyle.Fill;resolution.TextAlign=ContentAlignment.TopRight;resolution.Margin=Padding.Empty;resolution.ForeColor=PlayerTheme.Muted;previewTitle.Controls.Add(resolution,1,0);previewCard.Controls.Add(previewTitle,0,0);preview.Margin=Padding.Empty;previewCard.Controls.Add(preview,0,1);previewHost=previewCard;left.Controls.Add(previewCard,0,0);
         TableLayoutPanel mediaCard=new TableLayoutPanel();mediaCard.Dock=DockStyle.Fill;mediaCard.BackColor=Color.White;mediaCard.Padding=new Padding(14,12,8,12);mediaCard.ColumnCount=3;mediaCard.RowCount=2;mediaCard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));mediaCard.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute,124));mediaCard.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute,124));mediaCard.RowStyles.Add(new RowStyle(SizeType.Absolute,25));mediaCard.RowStyles.Add(new RowStyle(SizeType.Percent,100));mediaCard.Margin=Padding.Empty;
         Label mediaTitle=Label(L.T("媒体文件"),10,true);mediaTitle.Margin=Padding.Empty;mediaCard.Controls.Add(mediaTitle,0,0);
         filename=Label(L.T("拖入图片、GIF 或视频"),9,false);filename.Name="MediaFilename";filename.AutoSize=false;filename.AutoEllipsis=true;filename.Dock=DockStyle.Fill;filename.Margin=new Padding(0,0,8,0);filename.ForeColor=PlayerTheme.Muted;filename.TextAlign=ContentAlignment.MiddleLeft;mediaCard.Controls.Add(filename,0,1);
@@ -971,6 +1095,50 @@ internal sealed class PlayerForm : Form
     }
     Label Section(string text) {Label label=Label(text,10,true);label.AutoSize=false;label.Size=new Size(276,24);label.Margin=new Padding(0,4,0,5);return label;}
     FlowLayoutPanel SideRow(){FlowLayoutPanel row=new FlowLayoutPanel();row.Size=new Size(276,36);row.Padding=Padding.Empty;row.Margin=new Padding(0,0,0,5);row.WrapContents=false;return row;}
+    void SetupPreviewFullscreen()
+    {
+        fullscreenButton.Click += delegate { TogglePreviewFullscreen(); };
+        preview.MouseDoubleClick += delegate(object sender, MouseEventArgs e) { if(e.Button == MouseButtons.Left)TogglePreviewFullscreen(); };
+        previewMenu = new ContextMenuStrip();
+        ToolStripMenuItem toggle = new ToolStripMenuItem();
+        toggle.Click += delegate { TogglePreviewFullscreen(); };
+        previewMenu.Items.Add(toggle);
+        previewMenu.Opening += delegate { toggle.Text = L.T(fullscreenPreview == null ? "全屏" : "退出全屏"); };
+        preview.ContextMenuStrip = previewMenu;
+    }
+    void TogglePreviewFullscreen()
+    {
+        if(closing)return;
+        if(fullscreenPreview != null) { ExitPreviewFullscreen(); return; }
+        Rectangle screen = Screen.FromControl(preview).Bounds;
+        FullscreenPreviewForm window = new FullscreenPreviewForm();
+        window.AutoScaleMode = AutoScaleMode.None;
+        window.Font = Font;
+        window.FormBorderStyle = FormBorderStyle.None;
+        window.StartPosition = FormStartPosition.Manual;
+        window.Bounds = screen;
+        window.ShowInTaskbar = false;
+        window.TopMost = true;
+        window.BackColor = Color.Black;
+        window.FormClosing += delegate {
+            previewHost.Controls.Add(preview,0,1);
+            preview.Fullscreen = false;
+            preview.BackColor = PlayerTheme.Preview;
+            fullscreenPreview = null;
+            preview.Invalidate();
+        };
+        window.FormClosed += delegate { if(!closing && Visible)Activate(); };
+        fullscreenPreview = window;
+        preview.Fullscreen = true;
+        preview.BackColor = Color.Black;
+        window.Controls.Add(preview);
+        window.Show(this);
+        preview.Focus();
+    }
+    void ExitPreviewFullscreen()
+    {
+        if(fullscreenPreview != null)fullscreenPreview.Close();
+    }
     void InitializeOnce() {if(initialized)return;initialized=true;if(initialize!=null)initialize();}
     protected override void SetVisibleCore(bool value)
     {
@@ -988,11 +1156,12 @@ internal sealed class PlayerForm : Form
         base.WndProc(ref m);
     }
     void ShowMainWindow() {
-        if(closing)return;suppressStartupShow=false;ShowInTaskbar=true;Show();WindowState=FormWindowState.Normal;Activate();
+        if(closing)return;ExitPreviewFullscreen();suppressStartupShow=false;ShowInTaskbar=true;Show();WindowState=FormWindowState.Normal;Activate();
         if(decoderMissing && !ffmpegPromptActive)RestartPreview();
     }
     void HideToTray() {
         if(closing)return;
+        ExitPreviewFullscreen();
         // ShowInTaskbar recreates the native handle. Hide first so that handle
         // recreation cannot briefly show and repaint the still-visible form.
         Hide();ShowInTaskbar=false;if(tray!=null)tray.Visible=true;
@@ -1022,19 +1191,22 @@ internal sealed class PlayerForm : Form
     FlowLayoutPanel Flow() { FlowLayoutPanel p = new FlowLayoutPanel(); p.Dock = DockStyle.Fill; p.Padding = new Padding(0, 5, 0, 0); return p; }
     void UI(Action action) { if (!IsDisposed && !closing && IsHandleCreated) try { BeginInvoke(action); } catch (InvalidOperationException) { } }
     void Message(string text) { UI(delegate { status.Text = text; }); }
+    bool CanChooseMedia { get { return currentMode == 0 || currentMode == 3 || currentMode == 7; } }
     void UpdateButtons()
     {
-        choose.Enabled=currentMode==7;
-        offline.Enabled=currentMode==7 && media!=null;
-        AllowDrop=currentMode==7;
-        play.Enabled = (media != null || currentMode!=7) && !sending; stop.Enabled = sending; connect.Text = connected ? L.T("断开连接") : L.T("连接屏幕");
+        choose.Enabled=CanChooseMedia;
+        offline.Enabled=CanChooseMedia && media!=null;
+        AllowDrop=CanChooseMedia;
+        play.Enabled = (media != null || currentMode!=7) && !sending && !autoResume;
+        stop.Enabled = sending || autoResume;
+        connect.Text = connected ? L.T("断开连接") : (reconnectWanted || linkTask != null ? L.T("取消连接") : L.T("连接屏幕"));
         ports.Enabled = !connected && linkTask == null; refresh.Enabled = ports.Enabled;
         fit.Enabled = fps.Enabled = loop.Enabled = !sending;rotate.Enabled=true;
     }
     void ChangeState()
     {
         if(states.SelectedIndex<0)return;
-        currentMode=states.SelectedIndex;outputRotate=rotate.Checked;modeEpoch++;
+        editingStoredMedia=false;currentMode=states.SelectedIndex;outputRotate=rotate.Checked;modeEpoch++;
         int id=Interlocked.Increment(ref generation);Decoder old=decoder;decoder=null;if(old!=null)old.Dispose();
         lock(gate){latest=null;ended=false;sequence++;} shown=-1;nextPanel=DateTime.MinValue;
         changingMode=true;detail.Items.Clear();
@@ -1074,7 +1246,7 @@ internal sealed class PlayerForm : Form
     }
     void RefreshPorts()
     {
-        string current = ports.Text; ports.Items.Clear(); ports.Items.AddRange(ScreenPort.FindPorts());
+        string current = ports.Text; ports.Items.Clear(); ports.Items.AddRange(findScreenPorts());
         if (ports.Items.Contains(current)) ports.SelectedItem = current;
         else if (ports.Items.Contains(settings.Port)) ports.SelectedItem = settings.Port;
         else if (ports.Items.Contains("COM13")) ports.SelectedItem = "COM13"; else if (ports.Items.Count > 0) ports.SelectedIndex = 0;
@@ -1092,25 +1264,26 @@ internal sealed class PlayerForm : Form
     }
     void Browse()
     {
-        if(currentMode!=7)return;
+        if(!CanChooseMedia)return;
         using (OpenFileDialog d = new OpenFileDialog()) {
             d.Title = L.T("选择图片、GIF 或视频");
             d.Filter = L.T("图片、GIF 和视频") + "|" + "*.png;*.jpg;*.jpeg;*.bmp;*.webp;*.tif;*.tiff;*.gif;*.mp4;*.mkv;*.mov;*.avi;*.webm;*.wmv;*.m4v;*.ts" + "|" + L.T("所有文件") + "|" + "*.*";
-            if (d.ShowDialog(this) == DialogResult.OK && currentMode==7) LoadFile(d.FileName);
+            if (d.ShowDialog(this) == DialogResult.OK && CanChooseMedia) LoadFile(d.FileName,true);
         }
     }
-    void LoadFile(string path)
+    void LoadFile(string path, bool keepStoredMode = false)
     {
         if (!File.Exists(path)) { status.Text = L.T("找不到选择的文件。"); return; }
         Pause(); media = Path.GetFullPath(path); filename.Text = Path.GetFileName(media);
-        if(states.SelectedIndex!=7)states.SelectedIndex=7;else RestartPreview(); UpdateButtons();
+        if(keepStoredMode && (currentMode == 0 || currentMode == 3)) {editingStoredMedia=true;RestartPreview();}
+        else if(states.SelectedIndex!=7)states.SelectedIndex=7;else RestartPreview(); UpdateButtons();
     }
     void RestartPreview()
     {
         if(changingLanguage)return;
         SaveSettings();
         outputRotate=rotate.Checked;
-        if(currentMode!=7){modeEpoch++;nextPanel=DateTime.MinValue;return;}
+        if(currentMode!=7 && !editingStoredMedia){modeEpoch++;nextPanel=DateTime.MinValue;return;}
         if (media == null || closing) return;
         int id = Interlocked.Increment(ref generation); Decoder old = decoder; decoder = null; if (old != null) old.Dispose();
         lock (gate) { latest = null; ended = false; sequence++; }
@@ -1147,55 +1320,131 @@ internal sealed class PlayerForm : Form
             status.Text=L.T("未安装 FFmpeg，选择媒体或点击开始显示可重试。");preview.Hint(status.Text);return false;
         } finally {ffmpegPromptActive=false;}
     }
+    bool RestoreDisplayedFrame(IScreenConnection device, CancellationToken token)
+    {
+        byte[] frame;
+        int page;
+        bool turn;
+        lock(gate) { frame = displayedFrame; page = displayedPage; turn = displayedRotation; }
+        if(frame == null && page < 0)return false;
+        token.ThrowIfCancellationRequested();
+        device.Orientation(turn);
+        if(frame != null)device.SendFrame(frame,token);
+        else device.ShowStoredPhoto(page);
+        return true;
+    }
     void Connect()
     {
-        if (linkTask != null) return;
-        if (ports.SelectedItem == null) { status.Text = L.T("未找到 MSU2 屏幕，请插入屏幕后刷新。"); return; }
-        string name = ports.Text; status.Text = L.T("正在连接 ") + name + "…";
-        linkCancel = new CancellationTokenSource(); CancellationToken token = linkCancel.Token;
+        if(linkTask != null || closing)return;
+        reconnectWanted = true;
+        nextAutoAttempt = DateTime.UtcNow.AddSeconds(5);
+        if(ports.SelectedItem == null) {
+            sending = false;
+            status.Text = L.T("等待屏幕重连，将恢复之前的状态…");
+            UpdateButtons();
+            return;
+        }
+        string name = ports.Text;
+        status.Text = L.T("正在连接 ") + name + "…";
+        CancellationTokenSource attempt = new CancellationTokenSource();
+        CancellationToken token = attempt.Token;
+        linkCancel = attempt;
         linkTask = Task.Run(delegate {
+            Exception failure = null;
             try {
-                using (ScreenPort device = new ScreenPort(name)) {
-                    device.TouchReleased+=delegate { if(touchEnabled)UI(delegate { states.SelectedIndex=(states.SelectedIndex+1)%8; }); };
-                    connected = true; UI(delegate { status.Text = name + L.T(" 已连接 · 160 × 80"); UpdateButtons(); });
+                using(IScreenConnection device = openScreen(name)) {
+                    token.ThrowIfCancellationRequested();
+                    device.TouchReleased += delegate {
+                        if(touchEnabled)UI(delegate {
+                            if(ReferenceEquals(linkCancel,attempt) && !token.IsCancellationRequested)
+                                states.SelectedIndex = (states.SelectedIndex + 1) % 8;
+                        });
+                    };
+                    UI(delegate {
+                        if(!ReferenceEquals(linkCancel,attempt) || token.IsCancellationRequested)return;
+                        connected = true;
+                        status.Text = name + L.T(" 已连接 · 160 × 80");
+                        UpdateButtons();
+                    });
                     long last = -1;
-                    int lastEpoch=-1,gif=0;DateTime nextStored=DateTime.MinValue;
-                    while (!token.IsCancellationRequested) {
-                        int mode=currentMode;
-                        if(lastEpoch!=modeEpoch) { lastEpoch=modeEpoch;device.Orientation((mode==0||mode==3)&&outputRotate);gif=0;last=-1;nextStored=DateTime.MinValue; }
-                        if(sending && (mode==0||mode==3)) {
-                            if(DateTime.UtcNow>=nextStored) {
-                                device.ShowStoredPhoto(mode==0?(gif++%36)*100:3926);Interlocked.Increment(ref sentFrames);
-                                nextStored=mode==0?DateTime.UtcNow.AddMilliseconds(100):DateTime.MaxValue;
+                    int lastEpoch = -1, gif = 0;
+                    bool deviceRotation = false;
+                    DateTime nextStored = DateTime.MinValue;
+                    if(!sending)RestoreDisplayedFrame(device,token);
+                    while(!token.IsCancellationRequested) {
+                        int mode = currentMode;
+                        if(sending && lastEpoch != modeEpoch) {
+                            lastEpoch = modeEpoch;
+                            deviceRotation = (mode == 0 || mode == 3) && outputRotate;
+                            device.Orientation(deviceRotation);
+                            gif = 0; last = -1; nextStored = DateTime.MinValue;
+                        }
+                        if(sending && (mode == 0 || mode == 3)) {
+                            if(DateTime.UtcNow >= nextStored) {
+                                int page = mode == 0 ? (gif++ % 36) * 100 : StoredPhoto.Page;
+                                device.ShowStoredPhoto(page);
+                                lock(gate) { displayedFrame = null; displayedPage = page; displayedRotation = deviceRotation; }
+                                Interlocked.Increment(ref sentFrames);
+                                nextStored = mode == 0 ? DateTime.UtcNow.AddMilliseconds(100) : DateTime.MaxValue;
                             }
-                            device.KeepAlive();token.WaitHandle.WaitOne(15);continue;
+                            device.KeepAlive(); token.WaitHandle.WaitOne(15); continue;
                         }
                         byte[] frame; long seq; bool done;
-                        lock (gate) { frame = latest; seq = sequence; done = ended; }
-                        if (sending && frame != null && seq != last) { device.SendFrame(frame, token); last = seq; Interlocked.Increment(ref sentFrames); }
-                        else { device.KeepAlive(); token.WaitHandle.WaitOne(140); }
-                        if (mode==7 && sending && done && frame != null && last == seq) { sending = false; UI(delegate { status.Text = L.T("播放完成，屏幕保留当前画面"); UpdateButtons(); }); }
+                        lock(gate) { frame = latest; seq = sequence; done = ended; }
+                        if(sending && frame != null && seq != last) {
+                            device.SendFrame(frame,token);
+                            lock(gate) { displayedFrame = frame; displayedPage = -1; displayedRotation = deviceRotation; }
+                            last = seq;
+                            Interlocked.Increment(ref sentFrames);
+                        } else { device.KeepAlive(); token.WaitHandle.WaitOne(140); }
+                        if(mode == 7 && sending && done && frame != null && last == seq) {
+                            sending = false; autoResume = false;
+                            UI(delegate {
+                                if(!ReferenceEquals(linkCancel,attempt))return;
+                                status.Text = L.T("播放完成，屏幕保留当前画面"); UpdateButtons();
+                            });
+                        }
                     }
                 }
-            } catch (OperationCanceledException) { }
-            catch (Exception e) { if (!token.IsCancellationRequested) { Message(L.T("连接失败：") + e.Message); Log(e.ToString()); } }
-            finally { connected = false; sending = false; UI(delegate { linkTask = null; UpdateButtons(); }); }
-        }); UpdateButtons();
+            } catch(OperationCanceledException) { }
+            catch(Exception error) { if(!token.IsCancellationRequested) { failure = error; Log(error.ToString()); } }
+            finally { UI(delegate { FinishConnection(attempt,failure); }); }
+        });
+        UpdateButtons();
+    }
+    void FinishConnection(CancellationTokenSource attempt, Exception failure)
+    {
+        if(!ReferenceEquals(linkCancel,attempt))return;
+        bool cancelled = attempt.IsCancellationRequested;
+        connected = false; sending = false; linkTask = null; linkCancel = null;
+        attempt.Dispose();
+        if(!cancelled && reconnectWanted && !closing) {
+            nextAutoAttempt = DateTime.UtcNow.AddSeconds(5);
+            status.Text = L.T("等待屏幕重连，将恢复之前的状态…");
+        } else if(failure != null)status.Text = L.T("连接失败：") + failure.Message;
+        UpdateButtons();
     }
     async Task Disconnect()
     {
-        autoResume=false;
-        sending = false; if (linkCancel != null) linkCancel.Cancel(); Task task = linkTask;
-        if (task != null) await task; linkTask = null; connected = false;
-        if (linkCancel != null) { linkCancel.Dispose(); linkCancel = null; }
-        if (!closing) { status.Text = L.T("屏幕已断开"); UpdateButtons(); }
+        reconnectWanted = false; autoResume = false; sending = false;
+        CancellationTokenSource attempt = linkCancel;
+        if(attempt != null)attempt.Cancel();
+        Task task = linkTask;
+        if(task != null)await task;
+        if(linkCancel != null && !ReferenceEquals(linkCancel,attempt))return;
+        if(ReferenceEquals(linkCancel,attempt)) {
+            linkTask = null; linkCancel = null;
+            if(attempt != null)attempt.Dispose();
+        }
+        connected = false;
+        if(!closing) { status.Text = L.T("屏幕已断开"); UpdateButtons(); }
     }
     void Play()
     {
         if(currentMode==7 && decoderMissing){RestartPreview();return;}
-        if (!connected && ports.SelectedItem == null) { status.Text = L.T("请插入屏幕后刷新并选择端口。"); return; }
         lock (gate) { if (latest == null && currentMode!=0 && currentMode!=3) { status.Text = L.T("请等待内容载入完成。"); return; } }
         if (currentMode==7 && ended && !Decoder.IsStill(media)) RestartPreview();
+        autoResume = true; reconnectWanted = true;
         sending = true; status.Text = L.T("正在发送，暂停后可调整画面");
         if (!connected) Connect(); UpdateButtons();
     }
@@ -1212,12 +1461,12 @@ internal sealed class PlayerForm : Form
         byte[] pixels = null; long seq;
         lock (gate) { seq = sequence; if (seq != shown && latest != null) pixels = latest; }
         if (pixels != null) { preview.SetFrame(pixels); shown = seq; if (status.Text == L.T("正在载入媒体…")) status.Text = L.T("预览就绪，点击发送 / 播放"); }
-        if(autoResume && !connected && linkTask==null && (media!=null || currentMode!=7) && DateTime.UtcNow>=nextAutoAttempt) {
-            bool ready; lock(gate) { ready=latest!=null || currentMode==0 || currentMode==3; }
+        if(reconnectWanted && !connected && linkTask==null && DateTime.UtcNow>=nextAutoAttempt) {
+            bool ready; lock(gate) { ready=!autoResume || latest!=null || currentMode==0 || currentMode==3; }
             if(ready) {
                 nextAutoAttempt=DateTime.UtcNow.AddSeconds(5); RefreshPorts();
-                if(ports.SelectedItem!=null) { sending=true; Connect(); }
-                else status.Text=L.T("开机实时播放：等待屏幕连接，正在自动重试…");
+                if(ports.SelectedItem!=null) { sending=autoResume; Connect(); }
+                else status.Text=L.T("等待屏幕重连，将恢复之前的状态…");
             }
         }
         if (rate.ElapsedMilliseconds > 1000) {
@@ -1234,6 +1483,39 @@ internal sealed class PlayerForm : Form
             string line=DateTime.Now.ToString("s")+" "+text+Environment.NewLine;
             if(File.Exists(path) && new FileInfo(path).Length>1048576) File.WriteAllText(path,line); else File.AppendAllText(path,line);
         } } catch { }
+    }
+}
+
+internal static class StoredPhoto
+{
+    public const int Page = 3926, FirstPage = 3920, FrameBytes = 25600, SectorBytes = 28672;
+    public const int FrameOffset = (Page - FirstPage) * 256;
+    public static byte[] ReadPreservedResources(Func<int,int,byte[]> read)
+    {
+        byte[] original = new byte[SectorBytes];
+        byte[] prefix = read(FirstPage * 256,FrameOffset);
+        int suffixOffset = FrameOffset + FrameBytes;
+        byte[] suffix = read(FirstPage * 256 + suffixOffset,SectorBytes - suffixOffset);
+        Buffer.BlockCopy(prefix,0,original,0,prefix.Length);
+        Buffer.BlockCopy(suffix,0,original,suffixOffset,suffix.Length);
+        return original;
+    }
+    public static byte[] Frame(byte[] image) {
+        if(image.Length == FrameBytes)return (byte[])image.Clone();
+        if(image.Length != SectorBytes)throw new ArgumentException(L.T("照片数据或备份大小不正确。"));
+        byte[] frame = new byte[FrameBytes];Buffer.BlockCopy(image,FrameOffset,frame,0,frame.Length);return frame;
+    }
+    public static byte[] Merge(byte[] original,byte[] photo) {
+        if(original.Length != SectorBytes)throw new ArgumentException("original");
+        if(photo.Length == SectorBytes)return (byte[])photo.Clone();
+        if(photo.Length != FrameBytes)throw new ArgumentException(L.T("照片数据或备份大小不正确。"));
+        byte[] image = (byte[])original.Clone();Buffer.BlockCopy(photo,0,image,FrameOffset,photo.Length);return image;
+    }
+    public static byte[] Create(string path,int fit,bool turn,double start) {
+        using(Decoder decoder = new Decoder(path,10,fit,turn,false,false,start)) {
+            byte[] frame = decoder.Next();
+            if(frame == null)throw new IOException(L.T("素材不足以生成动画，请选择其他开始位置。"));return frame;
+        }
     }
 }
 
@@ -1260,7 +1542,7 @@ internal sealed class OfflineDialog : Form
     public bool Busy {get{return busy;}}
     readonly string media, port;
     readonly int fit;
-    readonly bool rotate;
+    readonly bool rotate, photo;
     byte[] prepared;
     bool busy;
     volatile bool writing;
@@ -1268,28 +1550,35 @@ internal sealed class OfflineDialog : Form
     Label message = new Label(), summary = new Label();
     NumericUpDown start = new NumericUpDown();
     Button prepare = new Button(), save = new Button(), restore = new Button(), cancelButton = new Button();
+    CheckBox backupOriginal = new CheckBox();
+    CheckBox verifyAfterWrite = new CheckBox();
     ProgressBar progress = new ProgressBar();
     Preview preview = new Preview();
     System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
     int frameIndex;
-    public OfflineDialog(string path, string target, int crop, bool turn)
+    public OfflineDialog(string path, string target, int crop, bool turn, bool savePhoto = false)
     {
-        media = path; port = target; fit = crop; rotate = turn;
-        Text = L.T("保存到屏幕 · 离线播放"); ClientSize = new Size(680, 560); MinimumSize = new Size(680, 560);
+        media = path; port = target; fit = crop; rotate = turn; photo = savePhoto;
+        Text = photo ? L.T("保存到屏幕 · 照片") : L.T("保存到屏幕 · 离线播放"); ClientSize = new Size(680, 560); MinimumSize = new Size(680, 560);
         StartPosition = FormStartPosition.CenterParent; Font = new Font("Microsoft YaHei UI", 10);
         BackColor = PlayerTheme.Canvas; ForeColor = PlayerTheme.Text;
         TableLayoutPanel root = new TableLayoutPanel(); root.Dock = DockStyle.Fill; root.Padding = new Padding(24); root.ColumnCount = 1; root.RowCount = 7;
         root.RowStyles.Add(new RowStyle(SizeType.Absolute, 72)); root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
         root.RowStyles.Add(new RowStyle(SizeType.Percent,100)); root.RowStyles.Add(new RowStyle(SizeType.Absolute,40));
         root.RowStyles.Add(new RowStyle(SizeType.Absolute,36)); root.RowStyles.Add(new RowStyle(SizeType.Absolute,54)); root.RowStyles.Add(new RowStyle(SizeType.Absolute,48));
-        summary.Text = L.T("关闭软件也能播放，屏幕需保持 USB 供电。\r\n图片会固定显示；GIF / 视频保存为 36 帧、3.6 秒的循环动画。");
+        summary.Text = photo ? L.T("将选取一帧保存到状态 3 的照片槽位。保存后选择状态 3 并点击开始显示。") : L.T("关闭软件也能播放，屏幕需保持 USB 供电。\r\n图片会固定显示；GIF / 视频保存为 36 帧、3.6 秒的循环动画。");
         summary.Dock = DockStyle.Fill; root.Controls.Add(summary,0,0);
         FlowLayoutPanel seek = new FlowLayoutPanel(); seek.Dock = DockStyle.Fill;
         seek.Controls.Add(new Label { Text = L.T("截取开始（秒）"), AutoSize = true, Margin = new Padding(0,6,8,0) });
         start.DecimalPlaces = 1; start.Maximum = 86400; start.Width = 110; start.Enabled = !Decoder.IsStill(media); seek.Controls.Add(start);
         start.ValueChanged += delegate { prepared = null; save.Enabled = false; }; root.Controls.Add(seek,0,1);
         root.Controls.Add(preview,0,2);
-        Label note = new Label(); note.Text = L.T("将替换原有离线动画；写入前自动备份，完成后逐字节校验。"); note.Dock = DockStyle.Fill; note.TextAlign = ContentAlignment.MiddleLeft; root.Controls.Add(note,0,3);
+        FlowLayoutPanel backupRow = new FlowLayoutPanel(); backupRow.Dock = DockStyle.Fill;
+        backupOriginal.Text = L.T("写入前备份原内容（较慢）"); backupOriginal.AutoSize = true;
+        backupOriginal.Checked = false; backupRow.Controls.Add(backupOriginal);
+        verifyAfterWrite.Text = L.T("写入后完整校验"); verifyAfterWrite.AutoSize = true;
+        verifyAfterWrite.Checked = false; verifyAfterWrite.Margin = new Padding(12,3,0,0); backupRow.Controls.Add(verifyAfterWrite);
+        root.Controls.Add(backupRow,0,3);
         progress.Dock = DockStyle.Fill; progress.Margin = new Padding(0,6,0,6); root.Controls.Add(progress,0,4);
         FlowLayoutPanel buttons = new FlowLayoutPanel(); buttons.Dock = DockStyle.Fill;
         prepare.Text = L.T("生成并预览"); save.Text = L.T("写入屏幕"); restore.Text = L.T("恢复备份…"); cancelButton.Text = L.T("取消备份");
@@ -1297,45 +1586,62 @@ internal sealed class OfflineDialog : Form
         save.Enabled = false; cancelButton.Enabled = false; root.Controls.Add(buttons,0,5);
         message.Text = Path.GetFileName(media); message.AutoEllipsis = true; message.Dock = DockStyle.Fill; root.Controls.Add(message,0,6); Controls.Add(root);
         prepare.Click += async delegate {
-            if(busy || !FfmpegDownloadDialog.Ensure(this)) return; SetBusy(true); message.Text = L.T("正在生成离线动画…"); double offset = (double)start.Value;
-            try { prepared = await Task.Run(delegate { return OfflineClip.Create(media,fit,rotate,offset); }); frameIndex=0; message.Text = L.T("预览已生成：160 × 80 · 36 帧 · 3.6 秒"); }
+            if(busy || !FfmpegDownloadDialog.Ensure(this)) return; SetBusy(true); message.Text = photo ? L.T("正在生成照片…") : L.T("正在生成离线动画…"); double offset = (double)start.Value;
+            try { prepared = await Task.Run(delegate { return photo ? StoredPhoto.Create(media,fit,rotate,offset) : OfflineClip.Create(media,fit,rotate,offset); }); frameIndex=0; message.Text = photo ? L.T("照片预览已生成：160 × 80") : L.T("预览已生成：160 × 80 · 36 帧 · 3.6 秒"); }
             catch(Exception e) { prepared = null; message.Text = L.T("生成失败：")+e.Message; }
             finally { SetBusy(false); }
         };
-        save.Click += async delegate { if(prepared != null) await WriteAnimation(prepared); };
+        save.Click += async delegate { if(prepared != null) await WriteStoredMedia(prepared); };
         restore.Click += async delegate {
             using(OpenFileDialog dialog = new OpenFileDialog()) {
-                dialog.Title = L.T("选择自动备份的原离线动画.bin"); dialog.Filter = L.T("离线动画备份") + "|" + "*.bin";
+                dialog.Title = photo ? L.T("选择照片或照片扇区备份") : L.T("选择自动备份的原离线动画.bin"); dialog.Filter = (photo ? L.T("照片备份") : L.T("离线动画备份")) + "|" + "*.bin";
                 if(dialog.ShowDialog(this) != DialogResult.OK) return;
-                try { byte[] data = File.ReadAllBytes(dialog.FileName); if(data.Length != 921600) throw new IOException(L.T("备份必须是 921600 字节的离线动画文件。")); prepared=data; frameIndex=0; await WriteAnimation(data); }
+                try { byte[] data = File.ReadAllBytes(dialog.FileName); if(photo) {StoredPhoto.Frame(data);}
+                    else if(data.Length != 921600) throw new IOException(L.T("备份必须是 921600 字节的离线动画文件。")); prepared=data; frameIndex=0; await WriteStoredMedia(data); }
                 catch(Exception e) { message.Text = L.T("恢复失败：")+e.Message; }
             }
         };
         cancelButton.Click += delegate { if(!writing && cancel != null) { cancel.Cancel(); message.Text = L.T("正在停止备份，尚未改动屏幕内容…"); } };
         FormClosing += delegate(object s,FormClosingEventArgs e) { if(busy) { e.Cancel=true; if(!writing && cancel!=null) cancel.Cancel(); else message.Text=L.T("正在写入或校验，请保持连接，等待完成后关闭。"); } };
-        timer.Interval=100; timer.Tick += delegate { if(prepared==null) return; byte[] frame=new byte[25600]; Buffer.BlockCopy(prepared,(frameIndex++ % 36)*25600,frame,0,25600); preview.SetFrame(frame); }; timer.Start();
+        timer.Interval=100; timer.Tick += delegate { if(prepared==null) return; byte[] frame=new byte[25600]; Buffer.BlockCopy(prepared,photo ? (prepared.Length == StoredPhoto.SectorBytes ? StoredPhoto.FrameOffset : 0) : (frameIndex++ % 36)*25600,frame,0,25600); preview.SetFrame(frame); }; timer.Start();
         FormClosed += delegate { timer.Stop(); timer.Dispose(); if(cancel!=null) cancel.Dispose(); };
     }
-    void SetBusy(bool value) { busy=value; prepare.Enabled=restore.Enabled=!value; start.Enabled=!value&&!Decoder.IsStill(media); save.Enabled=!value&&prepared!=null; }
-    async Task WriteAnimation(byte[] bytes)
+    void SetBusy(bool value) { busy=value; prepare.Enabled=restore.Enabled=backupOriginal.Enabled=verifyAfterWrite.Enabled=!value; start.Enabled=!value&&!Decoder.IsStill(media); save.Enabled=!value&&prepared!=null; }
+    string CompletedText(bool verified)
+    {
+        if(photo)return L.T(verified ? "照片已保存并校验，请选择状态 3 显示。" : "照片已写入，未执行完整校验，请选择状态 3 显示。");
+        return L.T(verified ? "已保存并校验。退出所有播放器后重新上电；若显示其他页面，可轻触屏幕切回动画。" : "写入完成，未执行完整校验。退出所有播放器后重新上电；若显示其他页面，可轻触屏幕切回动画。");
+    }
+    async Task WriteStoredMedia(byte[] bytes)
     {
         if(busy) return;
-        if(MessageBox.Show(this,L.T("将替换屏幕原有离线动画。原内容会先备份，写入后完整校验。\r\n读取速度有限，整个过程可能约 15 分钟。备份阶段可以取消。\r\n\r\n写入期间请保持 USB 供电。现在开始？"),L.T("写入离线动画"),MessageBoxButtons.OKCancel,MessageBoxIcon.Information)!=DialogResult.OK) return;
-        SetBusy(true); writing=false; cancel=new CancellationTokenSource(); cancelButton.Enabled=true; progress.Value=0;
+        bool makeBackup = backupOriginal.Checked;
+        bool verify = verifyAfterWrite.Checked;
+        string confirmation = makeBackup
+            ? L.T("将替换原内容，先备份再写入。备份阶段可取消。")
+            : L.T("将直接替换原内容，跳过备份。");
+        confirmation += "\r\n" + L.T(verify ? "写入后将完整校验。" : "将跳过写后校验。");
+        confirmation += L.T("\r\n\r\n写入期间请保持 USB 供电。现在开始？");
+        if(MessageBox.Show(this,confirmation,photo ? L.T("写入屏幕照片") : L.T("写入离线动画"),MessageBoxButtons.OKCancel,MessageBoxIcon.Information)!=DialogResult.OK)return;
+        SetBusy(true); writing=!makeBackup; cancel=new CancellationTokenSource(); cancelButton.Enabled=makeBackup; progress.Value=0;
         string folder=Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"离线备份",DateTime.Now.ToString("yyyyMMdd-HHmmss")+"-"+Guid.NewGuid().ToString("N").Substring(0,6));
         try {
             await Task.Run(delegate {
                 using(ScreenPort device=new ScreenPort(port)) {
-                    device.SaveOffline(bytes,folder,delegate(int p,string text) {
+                    Action<int,string> progressUpdate = delegate(int p,string text) {
                         if(p>=40) writing=true;
                         if(!IsDisposed) BeginInvoke((Action)delegate { progress.Value=Math.Min(100,p); message.Text=text; cancelButton.Enabled=!writing; });
-                    },cancel.Token);
+                    };
+                    if(photo)device.SavePhoto(bytes,folder,progressUpdate,cancel.Token,makeBackup,verify);
+                    else device.SaveOffline(bytes,folder,progressUpdate,cancel.Token,makeBackup,verify);
                 }
             });
-            message.Text=L.T("已保存并校验。退出所有播放器后重新上电；若显示其他页面，可轻触屏幕切回动画。");
-            MessageBox.Show(this,L.T("离线动画已写入，并通过完整校验。\r\n\r\n请退出所有播放器，重新插拔屏幕。之后保持 USB 供电即可自动播放。\r\n\r\n原动画备份：\r\n")+folder,L.T("保存完成"),MessageBoxButtons.OK,MessageBoxIcon.Information);
+            string completed = CompletedText(verify);
+            message.Text = completed;
+            string recordLabel = makeBackup ? L.T("\r\n\r\n备份目录：\r\n") : L.T("\r\n\r\n写入记录：\r\n");
+            MessageBox.Show(this,completed + recordLabel + folder,L.T("保存完成"),MessageBoxButtons.OK,MessageBoxIcon.Information);
         } catch(OperationCanceledException) { message.Text=L.T("备份已取消，未擦除或写入屏幕。"); }
-        catch(Exception e) { message.Text=L.T("未完成：")+e.Message; MessageBox.Show(this,e.Message+L.T("\r\n\r\n备份目录：\r\n")+folder,L.T("离线保存未完成"),MessageBoxButtons.OK,MessageBoxIcon.Error); }
+        catch(Exception e) { message.Text=L.T("未完成：")+e.Message; MessageBox.Show(this,e.Message+L.T("\r\n\r\n写入记录：\r\n")+folder,L.T("离线保存未完成"),MessageBoxButtons.OK,MessageBoxIcon.Error); }
         finally { writing=false; cancelButton.Enabled=false; cancel.Dispose(); cancel=null; SetBusy(false); }
     }
 }

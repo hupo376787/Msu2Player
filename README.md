@@ -26,6 +26,8 @@ Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑
 - 开机启动模式：每隔约 5 秒重新检测并尝试连接。
 - 接入多个同型号屏幕时，请在列表中选择目标端口；程序优先保留当前或上次使用的有效端口。
 
+运行过程中屏幕断电或拔出 USB 后，播放器会保留当前模式与播放意图，每隔约 5 秒重新检测串口。重连后继续原来的显示模式和播放状态，即使串口号变化也会重新识别。若断电前已暂停或播放结束，重连后恢复最后显示的画面并保持暂停。在等待期间点击 **暂停** 可暂停恢复播放，点击 **取消连接** 或主动 **断开连接** 可停止自动重连。播放器需要持续运行。
+
 未找到屏幕时，检查 USB 数据线、串口驱动及设备是否已接入；连接失败时，先退出占用该端口的其他屏幕软件，再刷新重试。
 
 ## 显示模式
@@ -42,6 +44,8 @@ Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑
 
 支持完整显示留边、铺满裁切、拉伸、180° 旋转及媒体循环播放。可选帧率为 1、2、5、10、15 fps；实际发送速度取决于设备和内容。勾选 **轻触屏幕切换状态** 后，可轻触屏幕依次切换模式。
 
+实时预览支持全屏显示。双击画面、点击预览标题旁的 **全屏** 按钮，或右键选择 **全屏** 即可进入。按 **Esc**、再次双击画面，或右键选择 **退出全屏** 可返回窗口。全屏显示在预览所在的显示器上，画面保持 160×80 的比例并持续更新。
+
 ## 托盘与开机启动
 
 - 关闭主窗口会隐藏到托盘，并继续运行；双击托盘图标可恢复窗口。
@@ -52,14 +56,22 @@ Windows 上的 160 × 80 MSU2 MINI 屏幕播放器，支持实时画面、电脑
 
 ## 保存到屏幕，离线播放
 
-在图片 / GIF / 视频模式中选择媒体，点击 **保存到屏幕…**：
+在状态 **0 · 屏幕内动图**、**3 · 屏幕内照片** 或 **7 · 图片 / GIF / 视频** 下，均可点击 **选择媒体…** 或拖入素材。选择后启用 **保存到屏幕…**，并保留当前状态。
+
+- **状态 0**：写入屏幕内动图，生成 36 帧、3.6 秒的循环动画。
+- **状态 3**：选取一帧写入屏幕照片槽位，保留同扇区的相邻资源。默认仅读取需要保留的相邻资源，也可勾选备份整个目标区域、写入后完整校验。图片直接生成照片，GIF / 视频可通过截取开始时间选择画面。保存后选择状态 3 并点击 **开始显示**。
+- **状态 7**：保留原有保存离线动画的功能。
+
+保存动画时的操作步骤如下：
 
 1. 选择截取开始时间，点击 **生成并预览**。
 2. 图片保存为固定画面；GIF / 视频生成 **36 帧、3.6 秒**的循环动画。
-3. 点击 **写入屏幕**并确认。程序先备份原动画，再写入并逐字节校验，整个过程可能约需 15 分钟。
+3. 点击 **写入屏幕**并确认。**写入前备份原内容（较慢）** 和 **写入后完整校验** 均为独立可选项，默认不勾选，写完即结束。需要保留原内容时可勾选备份，备份阶段可以取消。勾选完整校验后会逐字节读回全部写入区域并比较，耗时取决于设备。完成提示会显示是否执行了完整校验。
 4. 完成后退出所有屏幕播放器，重新插拔屏幕。保持 USB 供电即可离线播放；必要时轻触屏幕切回动画页面。
 
-备份位于播放器旁的 `离线备份/时间戳-标识/` 目录中。可使用 **恢复备份…** 选择其中的 `原离线动画.bin`，恢复过程也会先备份当前内容。只能在备份阶段取消；写入和校验期间请保持 USB 连接与供电。若设备的离线布局不符合支持的标准，程序会停止操作。
+写入记录及勾选后生成的备份位于播放器旁的 `离线备份/时间戳-标识/` 目录中。可使用 **恢复备份…** 选择已有的 `原离线动画.bin`，恢复时同样可选择是否备份当前内容。默认不会保存被替换的原动画或照片。只能在可选的备份阶段取消，写入和校验期间请保持 USB 连接与供电。若设备的离线布局不符合支持的标准，程序会停止操作。
+
+状态 3 的保存窗口可恢复 `原屏幕照片.bin` 或 `照片扇区-3920-4031.bin`。后者包含相邻资源，可用于恢复照片写入中断后的整个目标扇区区域。状态 3 使用播放器的照片槽位，断电重启后的默认显示由设备固件决定。
 
 ## FFmpeg 依赖与自动下载
 
@@ -100,17 +112,23 @@ MSU2 Mini Player is a Windows player for **160 × 80 MSU2 MINI** screens. It sup
 
 The player detects the screen by USB identifier (`VID_1A86&PID_FE0C&MI_00`), then validates its protocol and resolution. **COM13 is not required**. A different COM number on another PC works automatically. If you plug in the screen after a normal launch, click **Refresh**. Login startup retries detection and connection about every five seconds. With multiple matching screens, select the intended port.
 
+While the player is running, power loss or USB removal starts automatic port detection and reconnection about every five seconds. The player resumes the selected mode and playback state when the screen returns, including after a COM number change. Paused or completed playback restores the last displayed frame and stays paused. You can pause playback while waiting, or use **Cancel connection** / **Disconnect** to stop reconnection.
+
 ### Controls and startup
 
 Modes 0–7 cover stored animation, blue / red PC status, stored photo, clock, desktop mirror, network speed, and media playback. Display options include fit, crop, stretch, rotation, loop and target frame rate. Tap switching can cycle through the modes.
+
+Double-click the live preview, click **Fullscreen** beside its title, or right-click and choose **Fullscreen**. Press **Esc**, double-click again, or right-click and choose **Exit fullscreen** to return. Fullscreen uses the preview's current monitor, preserves the 160×80 aspect ratio and continues updating the live image.
 
 Closing the window keeps the player running in the tray. Double-click the tray icon to reopen it, or use its menu to pause, resume or exit. **Start at login** resumes the last mode and media when you sign in. **Start hidden in tray** hides the startup window. Reconfigure login startup after moving the executable.
 
 ### Offline playback
 
-In media mode, click **Save offline...**, choose a start time and **Build preview**, then **Write to screen**. Still images remain static; GIFs and videos become a **36-frame, 3.6-second loop**. The player backs up the original animation and fully verifies the write. The process may take about 15 minutes. Cancel is available during backup; keep USB power and the connection intact during writing and verification.
+In modes **0**, **3** and **7**, use **Open file...** or drop media into the window. Selecting media keeps the current mode and enables **Save offline...**. Modes 0 and 7 write a **36-frame, 3.6-second animation**. Mode 3 writes a **single photo frame** to the stored photo slot. For a GIF or video, choose the frame using the start time. Click **Build preview**, then **Write to screen**. After saving a photo, select mode 3 and click **Start display**.
 
-After completion, exit all screen players and reconnect the screen. It plays from USB power alone. Tap it to return to animation if needed. Backups are stored under `离线备份/` beside the executable. Use **Restore...** to select `原离线动画.bin` from a backup folder. Unsupported offline layouts are rejected before erasing or writing.
+**Back up original content (slower)** and **Full verification after writing** are independent options, both off by default. A write finishes after the device acknowledges the written pages. Enable verification to read back and compare the entire written region. The completion message states whether full verification ran. Photo writes read and preserve the adjacent resource fragments sharing the erase sectors. The photo dialog can restore either `原屏幕照片.bin` or the complete `照片扇区-3920-4031.bin` backup. The device firmware determines the default display after power cycling. Cancel is available during the optional backup stage. Keep USB power and the connection intact during writing and verification.
+
+After completion, exit all screen players and reconnect the screen. It plays from USB power alone. Tap it to return to animation if needed. Write records and optional backups are stored under `离线备份/` beside the executable. Use **Restore...** to select an existing `原离线动画.bin` from a backup folder. The replaced content is saved only when you enable backup. Unsupported offline layouts are rejected before erasing or writing.
 
 ### Settings and building
 
